@@ -425,27 +425,48 @@ def bloquear():
     if request.method == 'POST':
         try:
             data = request.get_json()
-            print(data)
-            required_fields = ['date', 'time', 'id']
-            for field in required_fields:
-                if field not in data:
-                    return jsonify({'error': f'{field} es un campo obligatorio'}), 400
 
-            nueva_disponibilidad = AvailabilityDates(
-                date=data['date'],
-                time=data['time'],
-                id=data['id'],
-                
-            )
-            print(nueva_disponibilidad)
-            db.session.add(nueva_disponibilidad)
+            if isinstance(data, list):
+                # Si es una lista, iterar sobre los objetos
+                for item in data:
+                    required_fields = ['date', 'time', 'id']
+                    for field in required_fields:
+                        if field not in item:
+                            return jsonify({'error': f'{field} es un campo obligatorio'}), 400
+
+                    nueva_disponibilidad = AvailabilityDates(
+                        date=item['date'],
+                        time=item['time'],
+                        id=item['id'],
+                    )
+
+                    db.session.add(nueva_disponibilidad)
+
+            elif isinstance(data, dict):
+                # Si es un objeto individual
+                required_fields = ['date', 'time', 'id']
+                for field in required_fields:
+                    if field not in data:
+                        return jsonify({'error': f'{field} es un campo obligatorio'}), 400
+
+                nueva_disponibilidad = AvailabilityDates(
+                    date=data['date'],
+                    time=data['time'],
+                    id=data['id'],
+                )
+
+                db.session.add(nueva_disponibilidad)
+
+            else:
+                return jsonify({'error': 'El formato de datos no es válido'}), 400
+
             db.session.commit()
 
-            return jsonify({'mensaje': 'Hora bloqueada exitosamente'}), 200
+            return jsonify({'mensaje': 'Horas bloqueadas exitosamente'}), 200
 
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
-        
+            return jsonify({'error': str(e)}), 500        
+
 #Desbloquear hora
 @api.route('/bloquear', methods=['PUT'])
 def desbloquear():
