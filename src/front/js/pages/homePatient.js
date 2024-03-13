@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
 import "../../styles/home.css";
-import { Navbar } from "../component/navbar"
+import { NavbarPatient, NavbarPatients} from "../component/navbar_patient"
 
 
 export const HomePatient = () => {
@@ -10,7 +10,7 @@ export const HomePatient = () => {
 
 	return (
 		<div className="container">
-			<Navbar />
+			<NavbarPatient />
 		</div>
 	);
 };

@@ -1,5 +1,3 @@
-/* home.css */
-
 .calendar {
   width: 80%;
   max-width: 400px;
@@ -49,10 +47,6 @@
 .modal-content ul {
   list-style: none;
   padding: 0;
-  display: inline-flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-around;
 }
 
 .modal-content li {

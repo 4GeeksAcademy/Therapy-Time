@@ -1,6 +1,10 @@
 import "../../styles/home.css";
+import "../../styles/landing.css";
 import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt} from '@fortawesome/free-solid-svg-icons';
+import { NavbarTherapist } from "../component/navbar"
 
 export const Patients = () => {
     const { store, actions } = useContext(Context);
@@ -26,6 +30,18 @@ export const Patients = () => {
         virtual_link: "",
         is_active : true
     });
+    const initialUserData = {
+        id : "",
+        role_id: 1,
+        username: "",
+        name: "",
+        lastname: "",
+        dni: "",
+        phone: "",
+        email: "", 
+        virtual_link: "",
+        is_active : true
+    };
 
     useEffect(() => {
         actions.getUsers();
@@ -34,6 +50,7 @@ export const Patients = () => {
     //Apertura y cierre de modales
     const openModal = () => {
         setShowModal(true);
+        setUserData(initialUserData);
     };
     const closeModal = () => {
         setShowModal(false);
@@ -220,236 +237,246 @@ export const Patients = () => {
     const visibleUsers = (showInactive ? sortedFilteredUsers : sortedActiveFilteredUsers);
 
     return (
-        <div className="container mt-5">
-            <div className="d-flex justify-content-start align-items-center mb-3">
-                <div className="input-group flex-grow-1 m-3">
-                    <span className="input-group-text">Nombre o Apellido</span>
-                    <input type="text" className="form-control" value={nameFilter} onChange={handleChangeNameFilter} />
+        <div style={{backgroundColor: 'white', minHeight: '100vh', minWidth: '100vw'}}>
+            <NavbarTherapist />
+            <div className="container mt-5 border" style={{paddingTop:'2vh'}}>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" />
+                <div className="d-flex justify-content-start align-items-center mb-3" style={{fontFamily: 'Nanum Gothic, sans-serif'}}>
+                    <div className="input-group flex-grow-1 ">
+                        <span className="input-group-text" style={{backgroundColor:'#FAFAFA', color:'#7E7E7E'}}>Nombre o Apellido</span>
+                        <input type="text" className="form-control" value={nameFilter} onChange={handleChangeNameFilter} />
+                    </div>
+                    <div className="input-group m-3">
+                        <span className="input-group-text"style={{backgroundColor:'#FAFAFA', color:'#7E7E7E'}}>DNI</span>
+                        <input type="text" className="form-control" value={dniFilter} onChange={handleChangeDniFilter} />
+                    </div>
+                    <div className="input-group flex-grow-1 m-3">
+                        <input className="form-check-input me-2" type="checkbox" id="showInactiveCheckbox" onChange={toggleShowInactive}/>
+                        <label className="form-check-label mr-1" htmlFor="showInactiveCheckbox">
+                            Mostrar pacientes inactivos
+                        </label>
+                    </div>
+                    <button type="button" className="btn ms-3" style={{backgroundColor:'#C47C7A', color:'white'}} onClick={openModal}>+</button>
                 </div>
-                <div className="input-group m-3">
-                    <span className="input-group-text">DNI</span>
-                    <input type="text" className="form-control" value={dniFilter} onChange={handleChangeDniFilter} />
-                </div>
-                <div className="input-group flex-grow-1 m-3">
-                    <input className="form-check-input me-2" type="checkbox" id="showInactiveCheckbox" onChange={toggleShowInactive} />
-                    <label className="form-check-label mr-1" htmlFor="showInactiveCheckbox">
-                        Mostrar pacientes inactivos
-                    </label>
-                </div>
-                <button type="button" className="btn btn-primary ms-3" onClick={openModal}>+</button>
-            </div>
-            <table className="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>DNI</th>
-                        <th>Teléfono</th>
-                        <th>Sala virtual</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {(sortedFilteredUsers.slice((currentPage - 1) * patientsPerPage, currentPage * patientsPerPage).map((user, index) => (
-                        (showInactive || user.is_active) && (
-                            <tr key={index}>
-                                <td>{user.name}</td>
-                                <td>{user.lastname}</td>
-                                <td>{user.dni}</td>
-                                <td>{user.phone}</td>
-                                <td>
-                                    <a href={user.virtual_link} target="_blank" rel="noopener noreferrer">
-                                        Ingresar
-                                    </a>
-                                </td>
-                                <td>{user.is_active ? 'Activo' : 'Inactivo'}</td>
-                                <td>
-                                    <FontAwesomeIcon icon={faPencilAlt} className="me-2" onClick={() => handleGetUser(user.id)} />
-                                </td>
+                <table className="table table-hover" style={{backgroundColor:'white', color: '#7E7E7E', fontFamily: 'Nanum Gothic, sans-serif'}}>
+                    <thead style={{backgroundColor: '#FAFAFA'}}>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>DNI</th>
+                            <th>Teléfono</th>
+                            <th>Sala virtual</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedFilteredUsers.length > 0 ? (
+                            sortedFilteredUsers.slice((currentPage - 1) * patientsPerPage, currentPage * patientsPerPage).map((user, index) => (
+                                (showInactive || user.is_active) && (
+                                    <tr key={index}>
+                                        <td>{user.name}</td>
+                                        <td>{user.lastname}</td>
+                                        <td>{user.dni}</td>
+                                        <td>{user.phone}</td>
+                                        <td>
+                                            <a href={user.virtual_link} target="_blank" rel="noopener noreferrer">
+                                                Ingresar
+                                            </a>
+                                        </td>
+                                        <td>{user.is_active ? 'Activo' : 'Inactivo'}</td>
+                                        <td>
+                                            <FontAwesomeIcon icon={faPencilAlt} className="me-2" onClick={() => handleGetUser(user.id)} />
+                                        </td>
+                                    </tr>
+                                )
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="7">No hay registros disponibles</td>
                             </tr>
-                        )
-                    )))}
-                </tbody>
-            </table>
-            <ul className="pagination justify-content-center">
-                {Array.from({ length: Math.ceil(visibleUsers.length / patientsPerPage) }, (_, index) => (
-                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                        <button onClick={() => paginate(index + 1)} className="page-link">
-                            {index + 1}
-                        </button>
-                    </li>
-                ))}
-            </ul>
-            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Nuevo paciente</h1>
-                            <button type="button" className="btn-close" onClick={closeModal} aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <form>
-                                <div className="row">
-                                    <div className="mb-3">
-                                        <label htmlFor="userName" className="col-form-label">Nombre de usuario:</label>
-                                        <input type="text" className="form-control" id="userName" name="username" value={userData.username} onChange={handleChange}  onFocus={() => handleInputFocus("username")} />
-                                        <span className="error-message">{errorMessages.username}</span>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">    
+                        )}
+                    </tbody>
+                </table>
+                <ul className="pagination justify-content-start">
+                    {Array.from({ length: Math.ceil(visibleUsers.length / patientsPerPage) }, (_, index) => (
+                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                            <button onClick={() => paginate(index + 1)} className="page-link" style={{backgroundColor:'#B2A79F', color:'white',   border: '1px solid transparent', outline: 'none'}}>
+                                {index + 1}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+                <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content" style={{textAlign:'left'}} id="contactModal">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalLabel">Nuevo paciente</h1>
+                                <button type="button" className="btn_close_contact" onClick={closeModal} aria-label="Close">X</button>
+                            </div>
+                            <div className="modal-body">
+                                <form>
+                                    <div className="row">
                                         <div className="mb-3">
-                                            <label htmlFor="name" className="col-form-label">Nombre:</label>
-                                            <input type="text" className="form-control" id="name" name="name" value={userData.name} onChange={handleChange}  onFocus={() => handleInputFocus("name")} />
-                                            <span className="error-message">{errorMessages.name}</span>
+                                            <label htmlFor="userName" className="col-form-label">Nombre de usuario:</label>
+                                            <input type="text" className="form-control textModal" id="userName" name="username" value={userData.username} onChange={handleChange}  onFocus={() => handleInputFocus("username")} />
+                                            <span className="text-danger">{errorMessages.username}</span>
                                         </div>
                                     </div>
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="lastName" className="col-form-label">Apellido:</label>
-                                            <input type="text" className="form-control" id="lastName" name="lastname" value={userData.lastname} onChange={handleChange}  onFocus={() => handleInputFocus("lastname")} />
-                                            <span className="error-message">{errorMessages.lastname}</span>
+                                    <div className="row">
+                                        <div className="col-6">    
+                                            <div className="mb-3">
+                                                <label htmlFor="name" className="col-form-label">Nombre:</label>
+                                                <input type="text" className="form-control textModal" id="name" name="name" value={userData.name} onChange={handleChange}  onFocus={() => handleInputFocus("name")} />
+                                                <span className="text-danger">{errorMessages.name}</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="mb-3">
+                                                <label htmlFor="lastName" className="col-form-label">Apellido:</label>
+                                                <input type="text" className="form-control textModal" id="lastName" name="lastname" value={userData.lastname} onChange={handleChange}  onFocus={() => handleInputFocus("lastname")} />
+                                                <span className="text-danger">{errorMessages.lastname}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="dni" className="col-form-label">DNI:</label>
-                                            <input type="text" className="form-control" id="dni" name="dni" value={userData.dni} onChange={handleChange}  onFocus={() => handleInputFocus("dni")}  />
-                                            <span className="error-message">{errorMessages.dni}</span>
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <div className="mb-3">
+                                                <label htmlFor="dni" className="col-form-label">DNI:</label>
+                                                <input type="text" className="form-control textModal" id="dni" name="dni" value={userData.dni} onChange={handleChange}  onFocus={() => handleInputFocus("dni")}  />
+                                                <span className="text-danger">{errorMessages.dni}</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="mb-3">
+                                                <label htmlFor="phone" className="col-form-label">Telefono de contacto:</label>
+                                                <input type="text" className="form-control textModal" id="phone" name="phone" value={userData.phone} onChange={handleChange}  onFocus={() => handleInputFocus("phone")} />
+                                                <span className="text-danger">{errorMessages.phone}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="phone" className="col-form-label">Telefono de contacto:</label>
-                                            <input type="text" className="form-control" id="phone" name="phone" value={userData.phone} onChange={handleChange}  onFocus={() => handleInputFocus("phone")} />
-                                            <span className="error-message">{errorMessages.phone}</span>
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <div className="mb-3">
+                                                <label htmlFor="email" className="col-form-label">Email:</label>
+                                                <input type="text" className="form-control textModal" id="email" name="email" value={userData.email} onChange={handleChange}  onFocus={() => handleInputFocus("email")}  /> 
+                                                <span className="text-danger">{errorMessages.email}</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="mb-3">
+                                                <label htmlFor="virtual_link" className="col-form-label">Link a sala vitual:</label>
+                                                <textarea className="form-control textModal" id="virtual_link" name="virtual_link" value={userData.virtual_link} onChange={handleChange} />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="email" className="col-form-label">Email:</label>
-                                            <input type="text" className="form-control" id="email" name="email" value={userData.email} onChange={handleChange}  onFocus={() => handleInputFocus("email")}  /> 
-                                            <span className="error-message">{errorMessages.email}</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="virtual_link" className="col-form-label">Link a sala vitual:</label>
-                                            <textarea className="form-control" id="virtual_link" name="virtual_link" value={userData.virtual_link} onChange={handleChange} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" onClick={handleSubmit}>Guardar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className={`modal fade ${showSuccessModal ? 'show d-block' : 'd-none'}`} id="successModal" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <button type="button" className="btn-close" onClick={closeSuccessModal} aria-label="Close"></button>
-                        </div>
-                         <div className="modal-body">
-                            {successAction === "add" ? (
-                                <span>El paciente se ha agregado con éxito.</span>
-                            ) : successAction === "edit" ? (
-                                <span>Los cambios se han guardado con éxito.</span>
-                            ) : null}
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={closeSuccessModal}>Cerrar</button>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-guardar-contact" onClick={handleSubmit}>Guardar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className={`modal fade ${showModalEdit ? 'show d-block' : 'd-none'}`} id="modalEdit" tabIndex="-1" aria-labelledby="ModalEdit" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Editar paciente</h1>
-                            <button type="button" className="btn-close" onClick={closeModal} aria-label="Close"></button>
+                <div className={`modal fade ${showSuccessModal ? 'show d-block' : 'd-none'}`} id="successModal" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content" style={{textAlign:'left'}} id="contactModal">
+                            <div className="modal-header justify-content-end">
+                                <button type="button" className="btn_close_contact" onClick={closeSuccessModal} aria-label="Close">X</button>
+                            </div>
+                            <div className="modal-body">
+                                {successAction === "add" ? (
+                                    <span>El paciente se ha agregado con éxito.</span>
+                                ) : successAction === "edit" ? (
+                                    <span>Los cambios se han guardado con éxito.</span>
+                                ) : null}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-guardar-contact" onClick={closeSuccessModal}>Cerrar</button>
+                            </div>
                         </div>
-                        <div className="modal-body">
-                            <form>
-                                <div className="row">
-                                    <div className="mb-3">
-                                        <label htmlFor="userName" className="col-form-label">Nombre de usuario:</label>
-                                        <input type="text" className="form-control" id="userName" name="username" value={userData.username} onChange={handleChange} onFocus={() => handleInputFocus("username")} />
-                                        <span className="error-message">{errorMessages.username}</span>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">    
-                                        <div className="mb-3">
-                                            <label htmlFor="name" className="col-form-label">Nombre:</label>
-                                            <input type="text" className="form-control" id="name" name="name" value={userData.name} onChange={handleChange}  onFocus={() => handleInputFocus("name")}  />
-                                            <span className="error-message">{errorMessages.name}</span>
+                    </div>
+                </div>
+                <div className={`modal fade ${showModalEdit ? 'show d-block' : 'd-none'}`} id="modalEdit" tabIndex="-1" aria-labelledby="ModalEdit" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content" style={{textAlign:'left'}} id="contactModal">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalLabel">Editar paciente</h1>
+                                <button type="button" className="btn_close_contact" onClick={closeModal} aria-label="Close">X</button>
+                            </div>
+                            <div className="modal-body">
+                                <form>
+                                    <div className="row">
+                                        <div className="mb-2">
+                                            <label htmlFor="userName" className="col-form-label">Nombre de usuario:</label>
+                                            <input type="text" className="form-control textModal" id="userName" name="username" value={userData.username} onChange={handleChange} onFocus={() => handleInputFocus("username")} />
+                                            <span className="text-danger">{errorMessages.username}</span>
                                         </div>
                                     </div>
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="lastName" className="col-form-label">Apellido:</label>
-                                            <input type="text" className="form-control" id="lastName" name="lastname" value={userData.lastname} onChange={handleChange}  onFocus={() => handleInputFocus("lastname")} />
-                                            <span className="error-message">{errorMessages.lastname}</span>
+                                    <div className="row">
+                                        <div className="col-6">    
+                                            <div className="mb-2">
+                                                <label htmlFor="name" className="col-form-label">Nombre:</label>
+                                                <input type="text" className="form-control textModal" id="name" name="name" value={userData.name} onChange={handleChange}  onFocus={() => handleInputFocus("name")}  />
+                                                <span className="text-danger">{errorMessages.name}</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="mb-2">
+                                                <label htmlFor="lastName" className="col-form-label">Apellido:</label>
+                                                <input type="text" className="form-control textModal" id="lastName" name="lastname" value={userData.lastname} onChange={handleChange}  onFocus={() => handleInputFocus("lastname")} />
+                                                <span className="text-danger">{errorMessages.lastname}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="dni" className="col-form-label">DNI:</label>
-                                            <input type="text" className="form-control" id="dni" name="dni" value={userData.dni} onChange={handleChange}  onFocus={() => handleInputFocus("dni")}  />
-                                            <span className="error-message">{errorMessages.dni}</span>
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <div className="mb-2">
+                                                <label htmlFor="dni" className="col-form-label">DNI:</label>
+                                                <input type="text" className="form-control textModal" id="dni" name="dni" value={userData.dni} onChange={handleChange}  onFocus={() => handleInputFocus("dni")}  />
+                                                <span className="text-danger">{errorMessages.dni}</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="mb-2">
+                                                <label htmlFor="phone" className="col-form-label">Telefono de contacto:</label>
+                                                <input type="text" className="form-control textModal" id="phone" name="phone" value={userData.phone} onChange={handleChange}  onFocus={() => handleInputFocus("phone")}  />
+                                                <span className="text-danger">{errorMessages.phone}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="phone" className="col-form-label">Telefono de contacto:</label>
-                                            <input type="text" className="form-control" id="phone" name="phone" value={userData.phone} onChange={handleChange}  onFocus={() => handleInputFocus("phone")}  />
-                                            <span className="error-message">{errorMessages.phone}</span>
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <div className="mb-2">
+                                                <label htmlFor="email" className="col-form-label">Email:</label>
+                                                <input type="email" className="form-control textModal" id="email" name="email" value={userData.email} onChange={handleChange}  onFocus={() => handleInputFocus("email")}  /> 
+                                                <span className="text-danger">{errorMessages.email}</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="mb-2">
+                                                <label htmlFor="status" className="col-form-label">Estado:</label>
+                                                <select className="form-control textModal" id="status" name="is_active" value={userData.is_active ? "activo" : "inactivo"} onChange={handleChange}>
+                                                    <option value="" disabled>Seleccione</option>
+                                                    <option value="activo">Activo</option>
+                                                    <option value="inactivo">Inactivo</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="email" className="col-form-label">Email:</label>
-                                            <input type="email" className="form-control" id="email" name="email" value={userData.email} onChange={handleChange}  onFocus={() => handleInputFocus("email")}  /> 
-                                            <span className="error-message">{errorMessages.email}</span>
+                                    <div className="row">
+                                        <div className="col-12">
+                                            <div className="mb-2">
+                                                <label htmlFor="virtual_link" className="col-form-label">Link a sala vitual:</label>
+                                                <textarea className="form-control textModal" id="virtual_link" name="virtual_link" value={userData.virtual_link} onChange={handleChange} />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="col-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="status" className="col-form-label">Estado:</label>
-                                            <select className="form-control" id="status" name="is_active" value={userData.is_active ? "activo" : "inactivo"} onChange={handleChange}>
-                                                <option value="" disabled>Seleccione</option>
-                                                <option value="activo">Activo</option>
-                                                <option value="inactivo">Inactivo</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-12">
-                                    <div className="mb-3">
-                                            <label htmlFor="virtual_link" className="col-form-label">Link a sala vitual:</label>
-                                            <textarea className="form-control" id="virtual_link" name="virtual_link" value={userData.virtual_link} onChange={handleChange} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>Guardar</button>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-guardar-contact" onClick={handleSaveChanges}>Guardar</button>
+                            </div>
                         </div>
                     </div>
                 </div>

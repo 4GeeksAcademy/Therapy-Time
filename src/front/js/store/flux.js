@@ -19,6 +19,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				},
 			],
 			consultations: [
+			consultations: [
 				{
 					"id": "",
 					"name": "",
@@ -28,6 +29,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"consultation": "",
 					"is_read": false,
 					"is_deleted": false,
+					"arrival_date ": "",
 					"arrival_date ": "",
 					"arrival_date": "",
 				}
@@ -58,7 +60,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return { error: resp.statusText };
 					}
 
-					return resp.json();
+					return resp
 				} catch (error) {
 					console.error("Error:", error)
 				}
@@ -102,25 +104,37 @@ const getState = ({ getStore, getActions, setStore }) => {
 						password: password
 					});
 
+
 					if (!response.ok) {
 						throw new Error('Failed to log in');
 					}
+
 
 					const responseData = await response.json();
 					const token = responseData.token || "";
 					const userRole = responseData.role || "";
 
+
 					localStorage.setItem('token', token);
 					console.log("Token almacenado en localStorage:", token);
 
+
 					setStore({ isAuthenticated: true, role: userRole });
+
 
 					return { success: true, message: responseData.message };
 				} catch (error) {
 					console.error("Error al realizar la solicitud:", error);
-					setStore({ isAuthenticated: false, userRole: "" });
-					return { success: false, error: 'Error de red' };
+					const errorMessage = error.message || 'Error de red';
+					if (error.response && error.response.status === 404) {
+						return { success: false, error: 'El usuario no está registrado' };
+					} else if (error.response && error.response.status === 401) {
+						return { success: false, error: 'La contraseña es incorrecta' };
+					} else {
+						return { success: false, error: errorMessage };
+					}
 				}
+			},
 			},
 			//Funciones para el recupero de contraseña		
 			handleResetPassword: async (email) => {
@@ -133,6 +147,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						},
 						body: JSON.stringify({ email })
 					});
+
 
 					const data = await response.json();
 					if (!response.ok) {
@@ -159,6 +174,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					});
 					const data = await response.json();
 
+
 					if (!response.ok) {
 						if (response.status === 401) {
 							throw new Error(data.mensaje || 'El token ingresado es inválido o ha expirado');
@@ -169,10 +185,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					}
 
+
 					return data;
 				} catch (error) {
 					throw new Error(error.message || 'Error al enviar la solicitud');
 				}
+			},
 			},
 			//Funciones para la gestion de pacientes
 			createUser: async (body) => {
@@ -257,6 +275,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+					throw error;
+				}
+			},
 			//Funciones para la edicion de perfil		
 			getUserData: async () => {
 				try {
@@ -298,6 +319,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						arrival_date: arrival_date
 					});
 
+
 					if (!response.ok) {
 						throw new Error('Failed to send message');
 					}
@@ -314,6 +336,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ consultations: data });
+						setStore({ consultations: data });
 						return data;
 					} else {
 						throw new Error("Error al obtener las consultas.");
@@ -322,6 +345,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error al obtener las consultas:", error.message);
 					throw error;
 				}
+			},
+			getOneConsultation: async (id) => {
 			},
 			getOneConsultation: async (id) => {
 				try {
@@ -337,6 +362,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+			},
 			changeStatusConsultation: async (id) => {
 				try {
 					const response = await getActions().protectedFetch(`/consultations/${id}/mark_as_unread`, 'PUT');
@@ -350,7 +376,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
-			logicalDeletionMessage: async (id) => {
+			markConsultationAsRead: async (id) => {
+				try {
+					const response = await getActions().protectedFetch(`/consultations/${id}/mark_as_read`, 'PUT');
+					if (response.ok) {
+						return response.json();
+					} else {
+						throw new Error('Error al marcar la consulta como no leída');
+					}
+				} catch (error) {
+					console.error("Error al marcar la consulta como no leída:", error.message);
+					throw error;
+				}
+			},
+			logicalDeletionMessage: async (id) =>  {
 				try {
 					const response = await getActions().protectedFetch(`/deleted_consultations/${id}`, 'PUT');
 					if (response.ok) {
@@ -364,11 +403,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			physicalDeletionMessage: async (id) => {
+			physicalDeletionMessage: async (id) => {
 				try {
+					const response = await getActions().protectedFetch(`/deleted_consultations/${id}`, 'DELETE');
 					const response = await getActions().protectedFetch(`/deleted_consultations/${id}`, 'DELETE');
 					if (response.ok) {
 						return response.json();
 					} else {
+						throw new Error('Error al eliminar el mensaje de forma permanente');
 						throw new Error('Error al eliminar el mensaje de forma permanente');
 					}
 				} catch (error) {

@@ -95,6 +95,20 @@ class AvailabilityDates(db.Model):
             "time": self.time,
         }
 
+
+class Schedules(db.Model):
+    __tablename__='schedules'
+    id =db.Column(db.Integer, primary_key=True, autoincrement=True)
+    time = db.Column(db.Date, nullable=False)
+
+    def __repr__(self):
+        return f'<Schedules {self.time}>'
+    def serialize(self):
+        return{
+            "id": self.id,
+            "time": self.time
+        }
+
 class BlockedTokenList(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     jti = db.Column(db.String(100), unique = True)

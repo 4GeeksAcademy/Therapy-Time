@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, url_for, Blueprint, json
+from flask import Flask, request, jsonify, url_for, Blueprint, json, redirect, url_for
 from api.models import db, User, BlockedTokenList, Role, seed, Consultation, AvailabilityDates
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -202,6 +202,7 @@ def logout_user():
 @jwt_required()
 def get_profile():
     current_user_id = get_jwt_identity()
+    
     user = User.query.get(current_user_id)
 
     if user is None:
@@ -223,12 +224,13 @@ def edit_profile():
         return "Usuario no autorizado", 403
         
     data = request.get_json()
+    print("Data received:", data)
 
     updated_user_data = {**user.__dict__, **data}
 
-
     if 'password' in data:
-        updated_user_data["password"] = bcrypt.generate_password_hash(data['password']).decode("utf-8")
+        new_password_hash = bcrypt.generate_password_hash(data['password']).decode("utf-8")
+        user.password = new_password_hash
 
     for key, value in updated_user_data.items():
         if key != "password":
@@ -285,7 +287,7 @@ def reset_password():
 
     enviar_correo_recuperacion(email, token)
 
-    return jsonify({"message": "Correo electrónico de recuperación enviado"}), 200
+    return jsonify({"message": "El correo electrónico de recuperación ha sido enviado con exito."}), 200
 
 # Configuracion de nueva contraseña
 @api.route('/change_password', methods=['POST'])
@@ -297,14 +299,14 @@ def change_password():
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"mensaje": "El usuario ingresado es inválido"}), 404 
+        return jsonify({"error": "El usuario ingresado es inválido"}), 404 
     if bcrypt.check_password_hash(user.reset_token, token):
         new_password = bcrypt.generate_password_hash(new_password, 10).decode("utf-8")
         user.password = new_password 
         db.session.commit()
-        return jsonify({"mensaje": "Contraseña cambiada exitosamente"}), 200
+        return jsonify({"error": "Contraseña cambiada exitosamente"}), 200
     else:
-        return jsonify({"mensaje": "El token ingresado es inválido o ha expirado"}), 401
+        return jsonify({"error": "El token ingresado es inválido o ha expirado"}), 401
 
 # Enviar mensaje de primera consulta
 @api.route('/message', methods=['POST'])
@@ -382,6 +384,23 @@ def mark_consultation_as_unread(id):
             return jsonify({"error": "Consultation not found"}), 404
     except Exception as e:
         return jsonify({"error": "Error marking consultation as unread"}), 500
+
+@api.route('/consultations/<int:id>/mark_as_read', methods=['PUT'])
+@jwt_required()
+def mark_consultation_as_read(id):
+    payload = get_jwt()
+    if payload["role"]!= 2:
+        return "Usuario no autorizado", 403
+    try:
+        consultation = Consultation.query.get(id)
+        if consultation:
+            consultation.is_read = True  # Cambiar a True para marcar como leída
+            db.session.commit()
+            return jsonify({"message": "Consultation marked as read"}), 200
+        else:
+            return jsonify({"error": "Consultation not found"}), 404
+    except Exception as e:
+        return jsonify({"error": "Error marking consultation as read"}), 500
 
 #Borrado logico de las consultas
 @api.route('/deleted_consultations/<int:id>', methods=['PUT'])
@@ -514,4 +533,3 @@ def unaviable_dates():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-

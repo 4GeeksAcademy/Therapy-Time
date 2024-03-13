@@ -1,7 +1,10 @@
+import "../../styles/inbox.css";
+import "../../styles/landing.css";
 import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEnvelope, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { NavbarTherapist } from "../component/navbar"
 
 export const Inbox = () => {
     const { store, actions } = useContext(Context);
@@ -92,14 +95,29 @@ export const Inbox = () => {
             if (event && event.target.tagName.toLowerCase() !== "input") { 
                 const data = await actions.getOneConsultation(id);
                 setConsultationData(data);
-                openModalConsultation();
+                // Abres el modal de consulta
+                setShowModalConsultation(true);
+                // Si la consulta está marcada como no leída, la marcamos como leída
+                if (!data.is_read) {
+                    await actions.markConsultationAsRead(id);
+                    await actions.getConsultations();
+                }
             }
         } catch (error) {
             console.error("Error al obtener la consulta:", error.message);
         }
     };
     
+    
     //Funciones para tab inbox
+    const handleDeleteSingleConsultation = async (id) => {
+        try {
+            setShowConfirmationModalInbox(true);
+            setSelectedConsultations([id]);
+        } catch (error) {
+            console.error("Error al eliminar la consulta:", error.message);
+        }
+    };    
     const confirmDeletion = async () => {
         try {
             setShowConfirmationModalInbox(false);
@@ -121,9 +139,9 @@ export const Inbox = () => {
             }
         });
     };  
-    const handleMarkAsUnreadSingle = async (consultationId) => {
+    const handleMarkAsUnreadSingle = async (id) => {
         try {
-            await actions.changeStatusConsultation(consultationId);
+            await actions.changeStatusConsultation(id);
             await actions.getConsultations();
         } catch (error) {
             console.error("Error al marcar la consulta como no leída:", error.message);
@@ -131,9 +149,9 @@ export const Inbox = () => {
     };
 
     //Funciones para tab papelera
-    const confirmPhysicalDeletion = async (ids) => {
+    const confirmPhysicalDeletion = async (id) => {
         try {
-            await Promise.all(ids.map(id => actions.physicalDeletionMessage(id)));
+            await Promise.all(id.map(id => actions.physicalDeletionMessage(id)));
             await actions.getConsultations();
             closeConfirmationModalDeleted(); 
             openModalSuccess(); 
@@ -164,144 +182,159 @@ export const Inbox = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <ul className="nav nav-tabs">
-                <li className="nav-item">
-                    <button className={`nav-link ${activeTab === "inbox" ? "active" : ""}`} onClick={() => handleTabChange("inbox")}>Bandeja de entrada</button>
-                </li>
-                <li className="nav-item">
-                    <button className={`nav-link ${activeTab === "deleted" ? "active" : ""}`} onClick={() => handleTabChange("deleted")}>Papelera</button>
-                </li>
-            </ul>
-            <div>
-                <div className="container-fluid mt-3 mb-3">
-                    <div className="row">
-                        <div className="col-md-4">
-                            <input type="text" className="form-control" placeholder="Buscar por nombre o apellido" value={nameFilter} onChange={handleNameFilterChange} />
-                        </div>
-                        <div className="col-md-3">
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" checked={showUnreadOnly} onChange={() => setShowUnreadOnly(!showUnreadOnly)} id="showUnreadOnly" />
-                                <label className="form-check-label" htmlFor="showUnreadOnly">
-                                    Mostrar solo no leídos
-                                </label>
-                            </div>
-                        </div>
-                        <div className="col-md-5 d-flex justify-content-end">
-                            {activeTab === "inbox" && (
-                                <>
-                                    <button onClick={handleMarkAsUnread}><FontAwesomeIcon icon={faEnvelope} title="Marcar como no leído"/></button>
-                                    <button onClick={handleDeleteSelectedConsultations}><FontAwesomeIcon icon={faTrash} title="Eliminar" /></button>
-                                </>
-                            )}
-                            {activeTab === "deleted" && (
-                                <a href="#" onClick={handlePermanentDeletion}>Eliminar permanentemente</a>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                <table className="table table-hover">
-                    <tbody>
-                        {currentConsultations.map((consultation, index) => (
-                            <tr key={index} className={consultation.is_read ? 'bg-light' : 'bg-white'}  onClick={() => handleConsultationClick(consultation.id, event)}>
-                                <td>
-                                    <input type="checkbox" checked={selectedConsultations.includes(consultation.id)} onChange={() => handleCheckboxChange(consultation.id)} />
-                                </td>
-                                <td>{consultation.arrival_date}</td>
-                                <td>{consultation.name} {consultation.lastname}</td>
-                                <td>{consultation.consultation.substring(0, 50)}...</td>
-                                {activeTab === "deleted" && (
-                                    <td>
-                                        <button onClick={() => handlePhysicalDeletion(consultation.id)}>
-                                            <FontAwesomeIcon icon={faTrash}/>
-                                        </button>
-                                    </td>
-                                )}
-                                {activeTab === "inbox" && (
-                                    <td>
-                                        <button><FontAwesomeIcon icon={faTrash} onClick={handleDeleteSelectedConsultations} /></button>
-                                        <button><FontAwesomeIcon icon={faEnvelope} onClick={() => handleMarkAsUnreadSingle(consultation.id)} /></button>
-                                    </td>
-                                )}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <nav>
-                <ul className="pagination">
-                    {Array.from({length: Math.ceil(filteredConsultations.length / consultationPerPage)}, (_, i) => (
-                        <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                            <button className="page-link" onClick={() => paginate(i + 1)}>{i + 1}</button>
-                        </li>
-                    ))}
+        <div style={{backgroundColor: 'white', minHeight: '100vh', minWidth: '100vw'}}>
+            <NavbarTherapist />
+            <div className="container mt-5 border" style={{paddingTop: '1vh'}}>
+                <ul className="nav nav-tabs" >
+                    <li className="nav-item">
+                        <button className={`nav-link ${activeTab === "inbox" ? "active" : "text-muted"}`} onClick={() => handleTabChange("inbox")}>Bandeja de entrada</button>
+                    </li>
+                    <li className="nav-item">
+                        <button className={`nav-link ${activeTab === "deleted" ? "active" : "text-muted"}`} onClick={() => handleTabChange("deleted")}>Papelera</button>
+                    </li>
                 </ul>
-            </nav>
-            <div className={`modal fade ${showConfirmationModalInbox ? 'show d-block' : 'd-none'}`} id="confirmationModalInbox" tabIndex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="confirmationModalLabel">Confirmación</h5>
-                            <button type="button" className="btn-close" onClick={closeConfirmationModal} aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            ¿Estás seguro de continuar?
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={() => setShowConfirmationModalInbox(false)}>Cancelar</button>
-                            <button type="button" className="btn btn-danger" onClick={confirmDeletion}>Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className={`modal fade ${showConfirmationModalDeleted ? 'show d-block' : 'd-none'}`} id="confirmationModalDeleted" tabIndex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="confirmationModalLabel">Confirmación</h5>
-                            <button type="button" className="btn-close" onClick={closeConfirmationModal} aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            Los mensajes seran eliminados de forma permanente. ¿Estás seguro de que deseas continuar?
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={() => setShowConfirmationModalDeleted(false)}>Cancelar</button>
-                            <button type="button" className="btn btn-danger" onClick={() => confirmPhysicalDeletion(selectedConsultations)}>Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className={`modal fade ${modalSuccess ? 'show d-block' : 'd-none'}`} id="successModal" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <button type="button" className="btn-close" onClick={closeModalSuccess} aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body d-flex justify-content-center">
-                            <span>Eliminación exitosa.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className={`modal fade ${showModalConsultation ? 'show d-block' : 'd-none'}`} id="showConsultation" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header d-flex justify-content-between align-items-center">
-                            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" onClick={closeModalConsultation}/>
-                            <div className="d-flex align-items-center">
-                                <p>{consultationData.arrival_date}</p>
+                <div>
+                    <div className="container-fluid mt-3 mb-3">
+                        <div className="row aling-items-center">
+                            <div className="col-md-3">
+                                <input type="text" className="form-control" placeholder="Buscar por nombre o apellido" value={nameFilter} onChange={handleNameFilterChange} />
+                            </div>
+                            <div className="col-md-3">
+                                <div className="form-check">
+                                    <input className="form-check-input mt-2" type="checkbox" checked={showUnreadOnly} onChange={() => setShowUnreadOnly(!showUnreadOnly)} id="showUnreadOnly" />
+                                    <label className="form-check-label mt-1" htmlFor="showUnreadOnly" style={{color:'grey'}}>
+                                        Mostrar solo no leídos
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-md-6 d-flex justify-content-end">
+                                {activeTab === "inbox" && (
+                                    <>
+                                        <button style={{border: 'none', backgroundColor: 'transparent'}} onClick={handleMarkAsUnread}>
+                                            <FontAwesomeIcon icon={faEnvelope} title="Marcar como no leído" style={{color: '#B2A79F', fontSize:'3vh'}} />
+                                        </button>
+                                        <button style={{border: 'none', backgroundColor: 'transparent'}} onClick={handleDeleteSelectedConsultations}>
+                                            <FontAwesomeIcon icon={faTrash} title="Eliminar" style={{color: '#B2A79F', fontSize:'3vh', marginLeft:'3vh'}} />
+                                        </button>
+                                    </>
+                                )}
+                                {activeTab === "deleted" && (
+                                    <a href="#" onClick={handlePermanentDeletion} style={{color:'grey'}}>Eliminar permanentemente</a>
+                                )}
                             </div>
                         </div>
-                        <div className="modal-body">
-                                <div>
-                                    <p>Nombre completo: {consultationData.name} {consultationData.lastname}</p>
-                                    <p>Edad: {consultationData.age}</p>
-                                    <p>Teléfono: {consultationData.phone}</p>
-                                    <p>Consulta: {consultationData.consultation}</p>
-                                </div>
+                    </div>
+                    {filteredConsultations.length > 0 ? (
+                        <table className="table table-hover">
+                        <tbody style={{color:'grey'}}>
+                            {currentConsultations.map((consultation, index) => (
+                                <tr key={index} style={{ backgroundColor: consultation.is_read ? '#f2f2f2' : 'white' }} onClick={() => handleConsultationClick(consultation.id)}>
+                                    <td className="align-middle">
+                                        <input type="checkbox" style={{marginLeft:'2vh'}} checked={selectedConsultations.includes(consultation.id)} onChange={() => handleCheckboxChange(consultation.id)} />
+                                    </td>
+                                    <td className="align-middle" onClick={() => handleConsultationClick(consultation.id, event)}>{consultation.arrival_date}</td>
+                                    <td className="align-middle" onClick={() => handleConsultationClick(consultation.id, event)}style={{ width: '20%' }}>{consultation.name} {consultation.lastname}</td>
+                                    <td className="align-middle" onClick={() => handleConsultationClick(consultation.id, event)} style={{ width: '40%' }}>{consultation.consultation.substring(0, 50)}...</td>
+                                    {activeTab === "deleted" && (
+                                        <td className="align-middle">
+                                            <button className="btn" style={{ backgroundColor: 'transparent', border: 'none' }} onClick={() => handlePhysicalDeletion(consultation.id)}>
+                                                <FontAwesomeIcon icon={faTrash} style={{ color: '#6c757d' }} />
+                                            </button>
+                                        </td>
+                                    )}
+                                    {activeTab === "inbox" && (
+                                        <td className="align-middle text-end">
+                                        <button className="btn me-2" style={{ backgroundColor: 'transparent', border: 'none' }}onClick={() => handleDeleteSingleConsultation(consultation.id)}>
+                                                <FontAwesomeIcon icon={faTrash} style={{ color: '#6c757d' }} />
+                                            </button>
+                                            <button className="btn" style={{ backgroundColor: 'transparent', border: 'none' }} onClick={() => handleMarkAsUnreadSingle(consultation.id)}>
+                                                <FontAwesomeIcon icon={faEnvelope} style={{ color: '#6c757d' }} />
+                                            </button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>                
+                    ) : (
+                    <div className="alert" role="alert" style={{backgroundColor:'#FAFAFA', color: '#7E7E7E'}}>
+                            No hay registros disponibles.
+                    </div>
+                    )}
+                </div>
+                <nav>
+                    <ul className="pagination">
+                        {Array.from({length: Math.ceil(filteredConsultations.length / consultationPerPage)}, (_, i) => (
+                            <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                <button style={{backgroundColor:'#B2A79F', color:'white',   border: '1px solid transparent', outline: 'none'}} className="page-link" onClick={() => paginate(i + 1)}>{i + 1}</button>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+                <div className={`modal fade ${showConfirmationModalInbox ? 'show d-block' : 'd-none'}`} id="confirmationModalInbox" tabIndex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content"  style={{textAlign:'left'}} id='contactModal'>
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="confirmationModalLabel">Confirmación</h5>
+                                <button type="button" className="btn_close_contact" onClick={closeConfirmationModal} aria-label="Close">X</button>
+                            </div>
+                            <div className="modal-body">
+                                ¿Estás seguro de continuar?
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-guardar" onClick={() => setShowConfirmationModalInbox(false)}>Cancelar</button>
+                                <button type="button" className="btn btn-guardar-contact" onClick={confirmDeletion}>Eliminar</button>
+                            </div>
                         </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModalConsultation}>Cerrar</button>
+                    </div>
+                </div>
+                <div className={`modal fade ${showConfirmationModalDeleted ? 'show d-block' : 'd-none'}`} id="confirmationModalDeleted" tabIndex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content"  style={{textAlign:'left'}} id='contactModal'>
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="confirmationModalLabel">Confirmación</h5>
+                                <button type="button" className="btn_close_contact" onClick={closeConfirmationModalDeleted} aria-label="Close">X</button>
+                            </div>
+                            <div className="modal-body">
+                                Los mensajes seran eliminados de forma permanente. ¿Estás seguro de que deseas continuar?
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-guardar" onClick={() => setShowConfirmationModalDeleted(false)}>Cancelar</button>
+                                <button type="button" className="btn btn-guardar-contact" onClick={() => confirmPhysicalDeletion(selectedConsultations)}>Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className={`modal fade ${modalSuccess ? 'show d-block' : 'd-none'}`} id="successModal" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content"  style={{textAlign:'left'}} id='contactModal'>
+                            <div className="modal-header d-flex justify-content-between">
+                                <span>Eliminación exitosa.</span>
+                                <button type="button" className="btn_close_contact" onClick={closeModalSuccess} aria-label="Close">X</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className={`modal fade ${showModalConsultation ? 'show d-block' : 'd-none'}`} id="showConsultation" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content"  style={{textAlign:'left'}} id='contactModal'>
+                            <div className="modal-header d-flex justify-content-between align-items-center">
+                                <FontAwesomeIcon icon={faArrowLeft} className="mr-2" onClick={closeModalConsultation}/>
+                                <div className="d-flex align-items-center">
+                                    <p>{consultationData.arrival_date}</p>
+                                </div>
+                            </div>
+                            <div className="modal-body">
+                                    <div>
+                                        <p>Nombre completo: {consultationData.name} {consultationData.lastname}</p>
+                                        <p>Edad: {consultationData.age}</p>
+                                        <p>Teléfono: {consultationData.phone}</p>
+                                        <p>Consulta: {consultationData.consultation}</p>
+                                    </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-guardar-contact" data-bs-dismiss="modal" onClick={closeModalConsultation}>Cerrar</button>
+                            </div>
                         </div>
                     </div>
                 </div>

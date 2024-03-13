@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jura&display=swap');
+
+/*PANTALLAS MEDIANAS Y GRANDES*/
+@media only screen and (min-width: 769px) {
+  /*Turnos*/
+  .turnos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 57vh;
+    background-color: #EDE9E9;
+    padding: 5vh 20vh; 
+  }
+  .textTurnos {
+    background-color: white;
+    font-family: 'Nanum Gothic', sans-serif;
+    color: #C47C7A;
+    text-align: center; 
+    max-width: 77%;
+    max-height: 76%;
+    padding: 3vh 7vh;
+  }
+  .btn {
+    margin: 2px;
+  }
+  .btn:hover{
+    color:#B2A79F;
+  }
+  /*Servicios*/
+  .services{
+    background-color: #FAFAFA;
+    height: 50vh;
+    color:#C47C7A;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+  .textServices{
+    border-right: #C47C7A solid 1vh;
+    line-height: 0.5;
+    padding-left: 7.2vh;
+  }
+  .titleService{
+    font-size: 4.2vh;
+  }
+  .contentServices{
+    width: 100vh;
+    margin-left: 26vh;
+  }
+  .right_sidebar {
+    position: absolute;
+    right: 0;
+    top: 82vh; 
+    width: 10vh;
+    height: 50vh;
+    background-color:#B2A79F;
+    border-top-left-radius: 10vh; 
+  }
+  /*Navbar*/
+  .logo {
+    width: 38vh; 
+    height: auto; 
+    margin-left: 4.5vh;
+    margin-top: 1.8vh;
+  }
+  .linksNav a{
+    margin-top:5.3vh;
+    margin-left: 13vh;
+    margin-right: 9vh;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 2.3vh;
+    color:#d8bab8 !important;
+  }
+  .columna-izquierda-top {
+    height: 14vh;
+    background-color:#EDE9E9;
+  }
+  .columna-derecha-top {
+    height: 14vh;
+    background-color: #FAFAFA; 
+  }
+  /* Sobre mi*/
+  .columna-izquierda-bottom {
+    height: 68vh;
+    background-color:#EDE9E9;
+  }
+  .columna-derecha-bottom {
+    height: 68vh;
+    background-color: #FAFAFA; 
+  }
+  .textAbout{
+    color:#C47C7A;
+    width: 100vh;
+    margin-left: 30vh;
+    margin-top: 12vh;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+  .btn_about{
+    margin-left: -2vh !important;
+  }
+  .profile{
+    border-top-left-radius: 80px;
+    border-bottom-right-radius: 80px;
+    border: solid white 1.2vh;
+    margin-top: 6vh;
+    position: absolute;
+    left: 35vh;
+    top: 0;
+    transform: translateY(29%); 
+  }
+  .navSmall{
+    display: none;
+  }
+}
+
+/*PANTALLAS PEQUEÑAS*/
+@media only screen and (max-width: 768px) {
+  /*Turnos*/
+  .textTurnosSmall{
+    background-color: white;
+    color:#C47C7A !important;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+  .turnoSmall{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 55vh;
+    background-color: #EDE9E9;
+    padding: 5vh 20vh; 
+  }
+  /*Servicios*/
+  .smallService{
+    background-color: #FAFAFA;
+    padding-top: 3vh;
+    padding-bottom: 4vh;
+    padding-right: 1vh;
+    color:#C47C7A;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+  .textServiceSmall{
+    margin-left: 4vh;
+  }
+  .contentServSmall{
+    margin-left: 3vh;
+  }
+  /*Sobre mi*/
+  .columna-izquierda-topSmall{
+    display: none; 
+  }
+  .textAboutSmall{
+    color:#aa6c6a;
+    font-family: 'Nanum Gothic', sans-serif;
+    margin-left: 10vh;
+    margin-top: 1vh;
+  }
+  .btn_about{
+    margin-left: -2vh;
+  }
+  .profileSmall{
+    height: 40vh;
+    width: auto;
+    border-top-left-radius: 8vh ;
+    border-bottom-right-radius: 8vh ;
+    border: white solid 1vh;
+    position: absolute;
+    left: 5vh;
+    top: 0;
+    transform: translateY(35%); 
+  }
+  .rowAboutSmall{
+    padding-top: 6vh;
+    padding-left: 3vh;
+    padding-right: 3vh;
+    padding-bottom: 10vh;
+    background: linear-gradient(to top, #FAFAFA, rgba(190, 185, 180, 0.3));
+  }
+  .aboutSmallNone{
+    display: none;
+  }
+  /*Navbar*/
+  .navMedium, logo{
+    display: none;
+  }
+  .logoSmall{
+    height: 8vh;
+    margin-top: 2vh;
+  }
+  .navSmall{
+    background-color: rgb(236, 234, 232);
+  }
+  .linksNavSmall{
+    font-size: 2vh;
+    padding-right: 5vh;
+    padding-left: 4vh;
+    color: #aa6c6a;
+  }
+}
+
+/*TODO TIPO DE PANTALLA*/
+.textContact{
+  line-height: 0.4;
+  margin-top: 3vh;
+  font-family: 'Jura', sans-serif;
+}
+.contact{
+  background-color: #FAFAFA;
+  color:#C47C7A;
+}
+.contactTitle{
+  font-family: 'Jura', sans-serif;
+  letter-spacing: 0.8vh;
+}
+.pService{
+  font-family: 'Jura', sans-serif;
+}
+a{
+  color:#C47C7A; 
+}
+a:hover{
+  color:#C47C7A;
+}
+.textModal{
+  font-family: 'Jura', sans-serif;
+}
+.modal-content {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Ajusta el valor de acuerdo a tus preferencias */
+}
+
+#contactModal{
+  background-color: white;
+  border:none;
+  color: grey;
+  border: solid rgb(218, 217, 217) 0.5vh;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+.btn-close{
+  color: grey !important; 
+}
+.btn-guardar-contact{
+  background-color: #c4c2c1;
+  color: white;
+  width: 20vh;
+}
+.btn-guardar-contact:hover{
+  background-color: #797777 ;
+  color: white;
+}
+.btn-guardar{
+  background-color:  #b89897;
+  color:white;
+  width: 20vh;
+}
+.btn-guardar:hover{
+  background-color: #C47C7A;
+  color: white;
+}
+.container-fluid {
+  position: relative;
+}
+.btn_close_contact {
+  color: grey !important;
+  background-color: transparent !important;
+  border: none;
+}
+
+
+
+
+ 
