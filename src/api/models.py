@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemyseeder import ResolvingSeeder
 
-import arrow
+import arrow 
 
 db = SQLAlchemy()
 
@@ -130,3 +130,43 @@ class Consultation(db.Model):
             "is_deleted": self.is_deleted,
             "arrival_date": self.arrival_date.strftime('%d-%B-%Y %H:%M:%S')
         }
+
+
+class Appointment(db.Model):
+    __tablename__ = 'appointments'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.DateTime, nullable=False)
+    time = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'<Appointment {self.id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "date": self.date,
+            "time": self.time,
+        }
+        
+def schedule_appointment(date, time):
+    try:
+        appointment = Appointment(date=date, time=time)
+        db.session.add(appointment)
+        db.session.commit()
+        return appointment
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+def cancel_appointment(appointment_id):
+    try:
+        appointment = Appointment.query.get(appointment_id)
+        if appointment:
+            db.session.delete(appointment)
+            db.session.commit()
+            return True
+        return False  # No se encontró la cita con el ID dado
+    except Exception as e:
+        db.session.rollback()
+        raise e

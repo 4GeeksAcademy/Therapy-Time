@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify, url_for, Blueprint, json
-from api.models import db, User, BlockedTokenList, Role, seed, Consultation, AvailabilityDates
+from api.models import db, User, BlockedTokenList, Role, seed, Consultation, AvailabilityDates, Appointment, schedule_appointment, cancel_appointment
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from flask_bcrypt import Bcrypt
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
+
 import os
 import datetime, json, string, random
 import requests
@@ -16,6 +17,8 @@ bcrypt = Bcrypt(app)
 api = Blueprint('api', __name__)
 
 CORS(api)
+
+
 
 #Variables para el envio de correo electronico
 EMAILJS_SERVICE_ID = 'service_yrznk4m'
@@ -515,3 +518,27 @@ def unaviable_dates():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/schedule', methods=['POST'])
+def schedule():
+    data = request.json
+    date = data.get('date')
+    time = data.get('time')
+
+    if not date or not time:
+        return jsonify({'error': 'Falta la fecha o la hora'}), 400
+
+    try:
+        appointment = schedule_appointment(date, time)
+        return jsonify(appointment.serialize()), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/cancel/<int:appointment_id>', methods=['DELETE'])
+def cancel(appointment_id):
+    try:
+        if cancel_appointment(appointment_id):
+            return jsonify({'message': 'Cita cancelada exitosamente'}), 200
+        else:
+            return jsonify({'error': 'No se encontró la cita'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
