@@ -1,7 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
 import { Context } from "../store/appContext";
-import { NavbarPatient } from "../component/navbar_patient";
 
 export const ModifyModal = () => {
     const { actions } = useContext(Context)
@@ -10,7 +8,7 @@ export const ModifyModal = () => {
     const currentDate = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear()
 
     return (
-        <div className="modal" tabIndex="-1">
+        <div className="modal" tabIndex="-1" id="modify" style={{ backgroundColor: 'white', border: 'none', color: 'grey', border: 'solid rgb(218, 217, 217) 0.5vh', fontFamily: 'Nanum Gothic' }}>
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">

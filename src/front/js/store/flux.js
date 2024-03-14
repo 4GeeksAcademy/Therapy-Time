@@ -404,19 +404,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error al obtener fechas no disponibles:', error);
 				}
 			},
-			fetchNextAppointment : async () => {
+			fetchNextAppointment: async () => {
 				try {
 					const response = await getActions.protectedFetch("/next_appointment", "GET", null)
 
-					if(!response.ok){
+					if (!response.ok) {
+						if (nextTurn === null) {
+							return
+						}
 						throw new Error("Error al traer turno")
 					}
 
 					const appointment = await response.json();
-    				return appointment;
+					return appointment;
 				} catch (error) {
 					console.error("Error al traer reserva: ", error)
 					return []
+				}
+			},
+			deleteNextAppointment: async () => {
+				try {
+					const response = await getActions.protectedFetch("/remove_appointment", "DELETE", null)
+
+					if (!response.ok) {
+						throw new Error("Error al borrar el turno")
+					}
+
+				} catch (error) {
+					console.error("Error al borrar reserva: ", error)
+					return
 				}
 			}
 		}

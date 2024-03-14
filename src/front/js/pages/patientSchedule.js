@@ -10,6 +10,7 @@ export const PatientSchedule = () => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showModifyModal, setShowModifyModal] = useState(false);
     const [nextTurn, setNextTurn] = useState(null)
+    const [appointmentError, setAppointmentError] = useState(null);
 
     const date = new Date()
 
@@ -17,42 +18,35 @@ export const PatientSchedule = () => {
 
     const navigate = useNavigate()
 
-    const toggleCancelModal = () => {
-        setShowCancelModal(!showCancelModal)
-    }
-
-    const toggleModifyModal = () => {
-        setShowModifyModal(!showModifyModal)
-    }
-
-    const goToPay = () => {
-        navigate("/payments")
-    }
-
     useEffect(() => {
         const fetchNextAppointment = async () => {
             try {
                 const response = await actions.protectedFetch("/next_appointment", "GET", null);
-
                 if (!response.ok) {
-                    if (nextTurn === null) {
-                        return
-                    }
-                    throw new Error("Error fetching next appointment");
+                    throw new Error("Error fetching next appointment"); // More specific error
                 }
+
                 const appointment = await response.json();
+
                 setNextTurn(appointment);
+                setAppointmentError(null); // Clear any previous error on successful fetch
             } catch (error) {
                 console.error("Error fetching next appointment:", error);
+                if (error.message.includes("409 Conflict")) {
+                    setAppointmentError("Solo se puede cancelar con 24hs de anticipación");
+                } else {
+                    setAppointmentError("Error al traer proximo turno"); // Set the error message
+                }
             }
         };
+
         fetchNextAppointment();
     }, []);
 
     return (
         <div>
             <NavbarPatient />
-            <div className="row">
+            <div className="row" style={{ marginTop: '150px' }}>
                 <div className="col-6">
                     {/* CALENDARIO ACA */}
                 </div>
@@ -62,15 +56,22 @@ export const PatientSchedule = () => {
                         <h4>Hora: </h4>
                         <p>Acceso a la sala virtual: </p>
                         <a href="#">{/*Agregar link al meet*/}</a>
+                        {appointmentError && (
+                            <div className="alert alert-danger d-flex justify-content-center" role="alert">
+                                {appointmentError}
+                            </div>
+                        )}
                     </div>
                     <div className="d-flex justify-content-center p-2">
-                        <button onClick={() => setShowCancelModal(true)} style={{ marginRight: '10px' }}>Cancelar turno</button>
-                        <button onClick={() => setShowModifyModal(true)} style={{ marginLeft: '10px' }}>Modificar turno</button>
+                        <button onClick={() => setShowCancelModal(true)} data-bs-toggle="modal" data-bs-target="#cancel" style={{ marginRight: '10px' }}>Cancelar turno</button>
+                        <button onClick={() => setShowModifyModal(true)} data-bs-toggle="modal" data-bs-target="#modify" style={{ marginLeft: '10px' }}>Modificar turno</button>
                         {showCancelModal && <CancelModal onClose={() => setShowCancelModal(false)} />}
                         {showModifyModal && <ModifyModal onClose={() => setShowModifyModal(false)} currentDate={currentDate} />}
                     </div>
-                    <div className="row d-flex justify-content-center">
-                        <button>Abonar por Mercado Pago</button>
+                    <div className="d-flex justify-content-center">
+                        <Link to="/payments">
+                            <button>Abonar por Mercado Pago</button>
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -7,9 +7,9 @@ from flask_bcrypt import Bcrypt
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
-import datetime, json, string, random
+import json, string, random
 import requests
-import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -557,4 +557,36 @@ def get_appointment():
     except Exception as e:
        
         print(f"Error al traer reserva de usuario: {user_id}: {e}")
+        return jsonify({"error": "Error del servidor"}), 500
+
+@app.route('/remove_appointment', methods=['DELETE'])
+@jwt_required()  
+def remove_appointment():
+    user_id = get_jwt_identity()  
+
+    try:
+        now = datetime.now(datetime.UTC)
+
+        # Filtrar las reservas para traer la mas proxima
+        reservation = Reservation.query.filter(
+            Reservation.user_id == user_id
+        ).order_by(Reservation.date).first()
+
+        if not reservation:
+            return jsonify({"message": "No hay turnos próximos para eliminar"}), 404
+
+        # Comprobar si el turno es antes de las 24 hs
+        removal_threshold = now + timedelta(hours=24)
+        if reservation.date < removal_threshold:
+            return jsonify({"message": "El turno ya no se puede cancelar. Debe hacerlo con al menos 24hs de anticipación."}), 409  
+
+        Reservation.query.filter_by(id=reservation.id).delete()
+        app.db.session.commit()
+
+        return jsonify({"message": "Turno eliminado exitosamente"}), 200
+
+    except Exception as e:
+        # Cancelar cambios en la bbdd en caso de error
+        app.db.session.rollback()  
+        print(f"Error al eliminar turno de usuario {user_id}: {e}")
         return jsonify({"error": "Error del servidor"}), 500

@@ -226,7 +226,7 @@ a:hover{
   font-family: 'Jura', sans-serif;
 }
 .modal-content {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Ajusta el valor de acuerdo a tus preferencias */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
 }
 
 #contactModal{
