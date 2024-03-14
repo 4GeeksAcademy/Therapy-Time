@@ -510,7 +510,7 @@ def delete_blocked_time(id):
         return jsonify({"message": str(e)}), 500
 
 # Obtener fechas dispponibles
-@api.route('/bloquear', methods=['GET'])
+@api.route('/fetch_qbloquear', methods=['GET'])
 def unaviable_dates():
     if request.method == 'GET':
         try:
