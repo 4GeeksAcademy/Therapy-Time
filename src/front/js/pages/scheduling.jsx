@@ -8,7 +8,7 @@ export const Block = () => {
   const [month, setMonth] = useState(1); //empieza en enero
   const [selectedDay, setSelectedDay] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedHour, setSelectedHour] = useState(null);
+    const [selectedHour, setSelectedHour] = useState(null);
   const [selectedHours, setSelectedHours] = useState([]);
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [extractedInfo, setExtractedInfo] = useState([]);
@@ -27,7 +27,7 @@ export const Block = () => {
     11: 'Noviembre',
     12: 'Diciembre'
   };
-
+  
   const fetchUnavailableDates = async () => {
     try {
       const response = await actions.apiFetch('/bloquear', 'GET');
@@ -99,7 +99,16 @@ export const Block = () => {
     setShowModal(false);
     setSelectedHours([])
   };
-
+  const handleSelectHours = (data) => {
+    // Verifica si el elemento ya está seleccionado
+    const isSelected = selectedHours.find(item => item.id === data.id);
+    if (isSelected) { // si existe
+      setSelectedHours(prevHours => prevHours.filter(item => item.id !== data.id));
+    } else {
+      //Si no existe
+      setSelectedHours(prevHours => [...prevHours, data]);
+    }
+  };
   const handleBlockTime = async (hour) => {
 
     const data = {
@@ -131,17 +140,6 @@ export const Block = () => {
       console.error('Error al desbloquear la hora:', error);
     }
   };
-  
-  const handleSelectHours = (data) => {
-    // Verifica si el elemento ya está seleccionado
-    const isSelected = selectedHours.find(item => item.id === data.id);
-    if (isSelected) { // si existe
-      setSelectedHours(prevHours => prevHours.filter(item => item.id !== data.id));
-    } else {
-      //Si no existe
-      setSelectedHours(prevHours => [...prevHours, data]);
-    }
-  };
   const handleBlockSelectedHours = async ()=>{
     await actions.apiFetch('/bloquear', 'POST', selectedHours)
       .then(selectedHours => {
@@ -166,6 +164,48 @@ export const Block = () => {
         console.log(selectedHours)
       });
   }
+  const handleBlockAllHours = async () => {
+    try {
+      const allHours = [];
+      // Iterar sobre las horas desde las 8 hasta las 20
+      for (let hour = 8; hour <= 20; hour++) {
+        const data = {
+          date: `2024-${month > 9 ? '' : '0'}${month}-${selectedDay > 9 ? '' : '0'}${selectedDay} ${hour > 9 ? '' : '0'}${hour}:00:00`,
+          time: hour,
+          id: `2024${month > 9 ? '' : '0'}${month}${selectedDay > 9 ? '' : '0'}${selectedDay}${hour > 9 ? '' : '0'}${hour}`,
+        };
+        allHours.push(data);
+      }
+      
+      await actions.apiFetch('/bloquear', 'POST', allHours);
+      console.log('Horas bloqueadas exitosamente:', allHours);
+      handleCloseModal();
+      setSelectedHours([]);
+    } catch (error) {
+      console.error('Error al bloquear las horas:', error);
+    }
+  };
+  const handleunBlockAllHours = async () => {
+    try {
+      const allHours = [];
+      // Iterar sobre las horas desde las 8 hasta las 20
+      for (let hour = 8; hour <= 20; hour++) {
+        const data = {
+          date: `2024-${month > 9 ? '' : '0'}${month}-${selectedDay > 9 ? '' : '0'}${selectedDay} ${hour > 9 ? '' : '0'}${hour}:00:00`,
+          time: hour,
+          id: `2024${month > 9 ? '' : '0'}${month}${selectedDay > 9 ? '' : '0'}${selectedDay}${hour > 9 ? '' : '0'}${hour}`,
+        };
+        allHours.push(data);
+      }
+      
+      await actions.apiFetch('/bloquear/multiple', 'DELETE', allHours);
+      console.log('Horas bloqueadas exitosamente:', allHours);
+      handleCloseModal();
+      setSelectedHours([]);
+    } catch (error) {
+      console.error('Error al bloquear las horas:', error);
+    }
+  };
   const renderModalContent = () => {
     const hours = Array.from({ length: 13 }, (_, index) => index + 8);
 
@@ -173,8 +213,10 @@ export const Block = () => {
       <div className="modal-content">
         <h2>Horas disponibles para el día {selectedDay}</h2>
         <button onClick={handleCloseModal}>Cerrar</button>
+        <button onClick={handleBlockAllHours}>bloquear todo el día</button>
         <button onClick={handleBlockSelectedHours}>Bloquear horas seleccionadas</button>
         <button onClick={handleUnblockSelectedHours}>desbloquear horas seleccionadas</button>
+        <button onClick={handleunBlockAllHours}>desbloquear todo el día</button>
         <ul>
 
           {hours.map((hour) => {
@@ -241,8 +283,7 @@ export const Block = () => {
                 <td key={cellIndex} className='pestanita' onClick={() => handleDayClick(cell)}>
                   {cell}
                   <div className="botones">
-                    <button className='blockDate'>bloquear</button>
-                    <button className='unblockDate'>Besbloquear</button>
+                    {/* <button className='unblockDate'>Besbloquear</button> */}
                   </div>
                 </td>
               ))}
