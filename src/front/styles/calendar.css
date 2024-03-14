@@ -1,4 +1,7 @@
 /* home.css */
+.selected {
+  background-color: gray !important;
+}
 
 .calendar {
   width: 80%;

@@ -132,13 +132,30 @@ export const Block = () => {
     }
   };
   
-  const handleSelectHours = (data) =>{
-    selectedHours.push(data)
-    console.log(selectedHours)
-    return selectedHours
-  }
+  const handleSelectHours = (data) => {
+    // Verifica si el elemento ya está seleccionado
+    const isSelected = selectedHours.find(item => item.id === data.id);
+    if (isSelected) { // si existe
+      setSelectedHours(prevHours => prevHours.filter(item => item.id !== data.id));
+    } else {
+      //Si no existe
+      setSelectedHours(prevHours => [...prevHours, data]);
+    }
+  };
   const handleBlockSelectedHours = async ()=>{
     await actions.apiFetch('/bloquear', 'POST', selectedHours)
+      .then(selectedHours => {
+        console.log('Hora bloqueada exitosamente:', selectedHours);
+        handleCloseModal();
+        setSelectedHours([])
+      })
+      .catch(error => {
+        console.error('Error al bloquear la hora:', error);
+        console.log(selectedHours)
+      });
+  }
+  const handleUnblockSelectedHours = async ()=>{
+    await actions.apiFetch('/bloquear/multiple', 'DELETE', selectedHours)
       .then(selectedHours => {
         console.log('Hora bloqueada exitosamente:', selectedHours);
         handleCloseModal();
@@ -157,6 +174,7 @@ export const Block = () => {
         <h2>Horas disponibles para el día {selectedDay}</h2>
         <button onClick={handleCloseModal}>Cerrar</button>
         <button onClick={handleBlockSelectedHours}>Bloquear horas seleccionadas</button>
+        <button onClick={handleUnblockSelectedHours}>desbloquear horas seleccionadas</button>
         <ul>
 
           {hours.map((hour) => {
@@ -171,14 +189,15 @@ export const Block = () => {
               item.day === selectedDay &&
               item.hour === hour
             ));
-
+            // Esta seleccionada la hora? 
+            const isSelected = selectedHours.find(item => item.id === data.id);
             return (
               <li
                 key={hour}
                 onClick={() => handleSelectHours(data)}
                 className={`pestanita 
                           ${matchingHour ? "bg-danger" : ""}
-                          
+                          ${isSelected ? "selected" : ""}
                           `}
               >
                 {hour}:00 - {hour + 1}:00

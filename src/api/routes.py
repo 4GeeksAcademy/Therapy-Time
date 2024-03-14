@@ -466,6 +466,30 @@ def bloquear():
     except Exception as e:
         return jsonify({'error': str(e)}), 500        
 
+from flask import request
+
+@api.route('/bloquear/multiple', methods=['DELETE'])
+def delete_multiple_blocked_times():
+    try:
+        data = request.get_json()
+        ids = [item['id'] for item in data]  # Obtener una lista de IDs del cuerpo de la solicitud
+
+        if not isinstance(ids, list):
+            return jsonify({"error": "La lista de IDs debe ser un arreglo"}), 400
+
+        deleted_count = 0
+        for id in ids:
+            blocked_time = AvailabilityDates.query.get(id)
+            if blocked_time:
+                db.session.delete(blocked_time)
+                deleted_count += 1
+
+        db.session.commit()
+
+        return jsonify({"message": f"{deleted_count} horas desbloqueadas exitosamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 @api.route('/bloquear/<string:id>', methods=['DELETE'])
