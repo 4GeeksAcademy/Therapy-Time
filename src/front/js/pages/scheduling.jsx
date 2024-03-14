@@ -99,17 +99,7 @@ export const Block = () => {
     setShowModal(false);
     setSelectedHours([])
   };
-  // const handleHourCheckboxChange = (hour) => {
-  //   setSelectedHour(hour)
-  //   setSelectedHours((prevSelectedHours) => {
-  //     if (prevSelectedHours.includes(hour)) {
-  //       return prevSelectedHours.filter((selectedHour) => selectedHour !== hour);
-  //     } else {
-  //       return [...prevSelectedHours, hour];
-  //     }
-  //   });
-  //   console.log(selectedHours)
-  // };
+
   const handleBlockTime = async (hour) => {
 
     const data = {
@@ -141,30 +131,11 @@ export const Block = () => {
       console.error('Error al desbloquear la hora:', error);
     }
   };
-  // const handleBlockSelectedHours = async () => {
-  //   try {
-  //     const data = {
-  //       date: `2024-${month > 9 ? '' : '0'}${month}-${selectedDay > 9 ? '' : '0'}${selectedDay} ${hour > 9 ? '' : '0'}${hour}:00:00`,
-  //       time: hour,
-  //       id: `2024${month > 9 ? '' : '0'}${month}${selectedDay > 9 ? '' : '0'}${selectedDay}${hour > 9 ? '' : '0'}${hour}`,
-  //     };
-  //     const response = await actions.apiFetch('/block_hours', 'POST', {data});
-
-  //     if (response.ok) {
-  //       // Realizar alguna acción después de bloquear las horas
-  //       handleCloseModal()
-  //       console.log('Horas bloqueadas con éxito');
-  //     } else {
-  //       console.error('Error al bloquear horas:', response.statusText);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error al bloquear horas:', error);
-  //   }
-  // };
+  
   const handleSelectHours = (data) =>{
     selectedHours.push(data)
     console.log(selectedHours)
-    return selectedHour
+    return selectedHours
   }
   const handleBlockSelectedHours = async ()=>{
     await actions.apiFetch('/bloquear', 'POST', selectedHours)
@@ -187,21 +158,6 @@ export const Block = () => {
         <button onClick={handleCloseModal}>Cerrar</button>
         <button onClick={handleBlockSelectedHours}>Bloquear horas seleccionadas</button>
         <ul>
-          {/* linea que no sirve */}
-          <div>
-          {/* {hours.map(hour => (
-            <div key={hour}>
-              <input
-                type="checkbox"
-                id={`hourCheckbox_${hour}`}
-                checked={selectedHours.includes(hour)}
-                onChange={() => handleHourCheckboxChange(hour)}
-              />
-              <label htmlFor={`hourCheckbox_${hour}`}>{hour}</label>
-            </div>
-          ))} */}
-          </div>
-          {/* linea que no sirve */}
 
           {hours.map((hour) => {
             const data = {

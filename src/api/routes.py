@@ -422,79 +422,51 @@ def physical_deletion(id):
 # Bloqueo de fechas
 @api.route('/bloquear', methods=['POST'])
 def bloquear():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
+    try:
+        data = request.get_json()
 
-            if isinstance(data, list):
-                # Si es una lista, iterar sobre los objetos
-                for item in data:
-                    required_fields = ['date', 'time', 'id']
-                    for field in required_fields:
-                        if field not in item:
-                            return jsonify({'error': f'{field} es un campo obligatorio'}), 400
-
-                    nueva_disponibilidad = AvailabilityDates(
-                        date=item['date'],
-                        time=item['time'],
-                        id=item['id'],
-                    )
-
-                    db.session.add(nueva_disponibilidad)
-
-            elif isinstance(data, dict):
-                # Si es un objeto individual
+        if isinstance(data, list):
+            # Si es una lista, iterar sobre los objetos
+            for item in data:
                 required_fields = ['date', 'time', 'id']
                 for field in required_fields:
-                    if field not in data:
+                    if field not in item:
                         return jsonify({'error': f'{field} es un campo obligatorio'}), 400
 
                 nueva_disponibilidad = AvailabilityDates(
-                    date=data['date'],
-                    time=data['time'],
-                    id=data['id'],
+                    date=item['date'],
+                    time=item['time'],
+                    id=item['id'],
                 )
 
                 db.session.add(nueva_disponibilidad)
 
-            else:
-                return jsonify({'error': 'El formato de datos no es válido'}), 400
-
-            db.session.commit()
-
-            return jsonify({'mensaje': 'Horas bloqueadas exitosamente'}), 200
-
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500        
-
-#Desbloquear hora
-@api.route('/bloquear', methods=['PUT'])
-def desbloquear():
-    if request.method == 'PUT':
-        try:
-            data = request.get_json()
-
-            required_fields = ['id', 'date']
+        elif isinstance(data, dict):
+            # Si es un objeto individual
+            required_fields = ['date', 'time', 'id']
             for field in required_fields:
                 if field not in data:
                     return jsonify({'error': f'{field} es un campo obligatorio'}), 400
 
-            # Suponiendo que tienes un identificador único para las fechas y horas bloqueadas
-            date_to_unlock = data.get('date')  # Asegúrate de tener el campo date en el payload
+            nueva_disponibilidad = AvailabilityDates(
+                date=data['date'],
+                time=data['time'],
+                id=data['id'],
+            )
 
-            # Buscar la entrada en la base de datos
-            disponibilidad_a_desbloquear = AvailabilityDates.query.filter_by(date=date_to_unlock).first()
+            db.session.add(nueva_disponibilidad)
 
-            if disponibilidad_a_desbloquear:
-                # Actualizar la disponibilidad a True
-                db.session.commit()
+        else:
+            return jsonify({'error': 'El formato de datos no es válido'}), 400
 
-                return jsonify({'mensaje': 'Hora desbloqueada exitosamente'}), 200
-            else:
-                return jsonify({'error': 'Fecha no encontrada'}), 404
+        db.session.commit()
 
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
+        return jsonify({'mensaje': 'Horas bloqueadas exitosamente'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500        
+
+
 
 @api.route('/bloquear/<string:id>', methods=['DELETE'])
 def delete_blocked_time(id):
