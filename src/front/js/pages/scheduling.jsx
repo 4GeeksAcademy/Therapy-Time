@@ -30,7 +30,7 @@ export const Scheduling = () => {
 
   const fetchUnavailableDates = async () => {
     try {
-      const response = await actions.apiFetch('/bloquear', 'GET');
+      const response = await actions.apiFetch('/available_dates', 'GET');
       setUnavailableDates(response);
     } catch (error) {
       console.error('Error al obtener fechas no disponibles:', error);
@@ -133,7 +133,7 @@ export const Scheduling = () => {
     const id = `2024${month > 9 ? '' : '0'}${month}${selectedDay > 9 ? '' : '0'}${selectedDay}${hour > 9 ? '' : '0'}${hour}`;
 
     try {
-      await actions.apiFetch(`/bloquear/${id}`, 'DELETE');
+      await actions.apiFetch(`/unblock/${id}`, 'DELETE');
       console.log('Hora desbloqueada exitosamente');
       handleCloseModal();
     } catch (error) {

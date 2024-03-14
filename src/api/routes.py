@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint, json, redirect, url_for
-from api.models import db, User, BlockedTokenList, Role, seed, Consultation, AvailabilityDates
+from api.models import db, User, BlockedTokenList, Role, seed, Consultation, AvailabilityDates, Reservation
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
@@ -494,7 +494,7 @@ def desbloquear():
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-@api.route('/bloquear/<string:id>', methods=['DELETE'])
+@api.route('/unblock/<string:id>', methods=['DELETE'])
 def delete_blocked_time(id):
     try:
         # Supongamos que tienes un modelo llamado BlockedTime
@@ -512,7 +512,7 @@ def delete_blocked_time(id):
         return jsonify({"message": str(e)}), 500
 
 # Obtener fechas dispponibles
-@api.route('/bloquear', methods=['GET'])
+@api.route('/available_dates', methods=['GET'])
 def unaviable_dates():
     if request.method == 'GET':
         try:
@@ -533,3 +533,28 @@ def unaviable_dates():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@api.route('/next_appointment', methods=['GET'])
+@jwt_required
+def get_appointment():
+    user_id = get_jwt_identity()
+
+    try:
+        # Filtrar las reservas que sean de una fecha anterior a la actual y traer la primera; es decir, la que se agrego primero.
+        # (¿Asumimos que la terapeuta agrego la más proxima primero?)
+        reservation = Reservation.query \
+            .filter(Reservation.user_id == user_id) \
+            .filter(Reservation.date >= datetime.date.today()) \
+            .order_by(Reservation.date) \
+            .first()
+
+
+        if reservation:
+            return jsonify(reservation.serialize())
+        else:
+            return jsonify({"message": "No hay turnos próximos"}), 200 
+
+    except Exception as e:
+       
+        print(f"Error al traer reserva de usuario: {user_id}: {e}")
+        return jsonify({"error": "Error del servidor"}), 500

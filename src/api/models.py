@@ -3,6 +3,7 @@ from sqlalchemyseeder import ResolvingSeeder
 
 db = SQLAlchemy()
 
+import enum
 import datetime
 
 class User(db.Model):
@@ -62,13 +63,35 @@ def seed():
     seeder.load_entities_from_json_file('seedData.json')
     db.session.commit()
 
+class Weekdays(enum.Enum):
+    LUNES = 'Lunes'
+    MARTES = 'Martes'
+    MIERCOLES = 'Miércoles'
+    JUEVES = 'Jueves'
+    VIERNES = 'Viernes'
+
+class Hours(enum.Enum):
+    HOUR_8 = '08:00'
+    HOUR_9 = '09:00'
+    HOUR_10 = '10:00'
+    HOUR_11 = '11:00'
+    HOUR_12 = '12:00'
+    HOUR_13 = '13:00'
+    HOUR_14 = '14:00'
+    HOUR_15 = '15:00'
+    HOUR_16 = '16:00'
+    HOUR_17 = '17:00'
+    HOUR_18 = '18:00'
+    HOUR_19 = '19:00'
+    HOUR_20 = '20:00'
+
 class Reservation(db.Model):
     __tablename__='reservation'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.Date, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship("User")
-
+    
 
     def __repr__(self):
         return f'<Reservation {self.id}>'

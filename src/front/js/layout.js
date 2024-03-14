@@ -9,7 +9,7 @@ import { Login } from "./pages/login"
 import { Recovery } from "./pages/recovery";
 import { HomePatient } from "./pages/homePatient";
 import { HomeTherapist } from "./pages/homeTherapist";
-import {Scheduling} from "./pages/scheduling.jsx";
+import { Scheduling } from "./pages/scheduling.jsx";
 import { AppointmentScheduler } from "./pages/appointmentScheduler";
 import { IncomeControl } from "./pages/incomeControl";
 import { Inbox } from "./pages/inbox";
@@ -40,7 +40,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Landing />} path="/" />
                         <Route element={<Login />} path="/login" />
-                        <Route element={!isAuthenticated() ? <Navigate to="/login" /> : role === "Patient" ? <HomePatient /> : <HomeTherapist />} path="/home" />
+                        <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <HomeTherapist />} path="/home" />
                         <Route element={<Recovery />} path="/recovery" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <EditProfile />} path="/editProfile" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <Payments />} path="/payments" />
