@@ -541,7 +541,8 @@ def unaviable_dates():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+    
+# Traer el proximo turno (paciente)
 @api.route('/next_appointment', methods=['GET'])
 @jwt_required
 def get_appointment():
@@ -566,6 +567,7 @@ def get_appointment():
         print(f"Error al traer reserva de usuario: {user_id}: {e}")
         return jsonify({"error": "Error del servidor"}), 500
 
+# Cancelar el proximo turno (paciente)
 @app.route('/remove_appointment', methods=['DELETE'])
 @jwt_required()  
 def remove_appointment():
