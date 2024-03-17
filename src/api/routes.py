@@ -17,6 +17,14 @@ api = Blueprint('api', __name__)
 
 CORS(api)
 
+# Comprobar si la psicologa esta disponible en una fecha y hora particular
+def is_therapist_available(date, time):
+        availability = AvailabilityDates.query.filter_by(
+            date=date,
+            time=time
+        ).first()
+        return availability is not None
+
 #Variables para el envio de correo electronico
 EMAILJS_SERVICE_ID = 'service_yrznk4m'
 EMAILJS_TEMPLATE_ID = 'template_ebpnklz'
@@ -545,9 +553,8 @@ def get_appointment():
         reservation = Reservation.query \
             .filter(Reservation.user_id == user_id) \
             .filter(Reservation.date >= datetime.date.today()) \
-            .order_by(Reservation.date) \
+            .order_by(Reservation.date.asc(), Reservation.time.asc()) \
             .first()
-
 
         if reservation:
             return jsonify(reservation.serialize())
@@ -589,4 +596,35 @@ def remove_appointment():
         # Cancelar cambios en la bbdd en caso de error
         app.db.session.rollback()  
         print(f"Error al eliminar turno de usuario {user_id}: {e}")
+        return jsonify({"error": "Error del servidor"}), 500
+
+# Modificar turno (paciente)
+@app.route('/reschedule_appointment', methods=['POST'])
+@jwt_required()
+def reschedule_appointment():
+    user_id = get_jwt_identity
+    data = request.get_json()
+    
+    try:
+        desired_date = datetime.date.fromisoformat(data.get("date"))
+        desired_time = data.get("time")
+
+        if not is_therapist_available(desired_date, desired_time):
+            return jsonify({"message": "El horario elegido no esta disponible"}), 409
+
+        reservation = Reservation.query.filter_by(user_id=user_id).first()
+
+        if not reservation:
+            return jsonify({"message" : "No hay turnos para reprogramar"}), 404
+
+        reservation.date = desired_date
+        reservation.time = desired_time
+
+        db.session.commit()
+
+        return jsonify({"message": "Turno reprogramado exitosamente"}), 200
+    
+    except Exception as e:
+        print(f"Error al reprogramar turno: {e}")
+        db.session.rollback()
         return jsonify({"error": "Error del servidor"}), 500

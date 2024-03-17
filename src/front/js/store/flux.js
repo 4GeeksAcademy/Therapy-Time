@@ -434,6 +434,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error al borrar reserva: ", error)
 					return
 				}
+			},
+			modifyNextAppointment: async () => {
+				try {
+					const response = await getActions.protectedFetch("/reschedule_appointment", "POST", { date, time })
+
+					if (!response.ok) {
+						throw new Error("Error al modificar el turno")
+					}
+
+					console.log("Turno modificado exitosamente")
+
+				} catch (error) {
+					console.error("Error: ", error)
+				}
 			}
 		}
 	};

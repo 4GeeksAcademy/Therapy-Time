@@ -20,7 +20,7 @@ export const Payments = () => {
                         />
                     </div>
                     <div className="row">
-                        <label>Desde</label>
+                        <label>Desde:</label>
                         <input
                             type="date"
                         />
