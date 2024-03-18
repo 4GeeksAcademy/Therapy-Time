@@ -9,7 +9,7 @@ import { Login } from "./pages/login"
 import { Recovery } from "./pages/recovery";
 import { HomePatient } from "./pages/homePatient";
 import { HomeTherapist } from "./pages/homeTherapist";
-import {Scheduling} from "./pages/scheduling.js";
+import { Scheduling } from "./pages/scheduling.js";
 import { AppointmentScheduler } from "./pages/appointmentScheduler";
 import { IncomeControl } from "./pages/incomeControl";
 import { Inbox } from "./pages/inbox";

@@ -402,75 +402,78 @@ def mark_consultation_as_read(id):
     except Exception as e:
         return jsonify({"error": "Error marking consultation as read"}), 500
 
-@api.route('/bloquear-varias-horas', methods=['POST'])
-def bloquear_varias_horas():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
+# Bloqueo de fechas
+@api.route('/bloquear', methods=['POST'])
+def bloquear():
+    try:
+        data = request.get_json()
 
-            # Verifica si el campo 'dates' está presente y es una lista
-            if 'dates' not in data or not isinstance(data['dates'], list):
-                return jsonify({'error': 'El campo "dates" es obligatorio y debe ser una lista de fechas con horas'}), 400
+        if isinstance(data, list):
+            # Si es una lista, iterar sobre los objetos
+            for item in data:
+                required_fields = ['date', 'time', 'id']
+                for field in required_fields:
+                    if field not in item:
+                        return jsonify({'error': f'{field} es un campo obligatorio'}), 400
 
-            # Itera sobre cada fecha en la lista
-            for date_data in data['dates']:
-                # Verifica si los campos requeridos están presentes en cada objeto de fecha
-                if 'date' not in date_data or 'times' not in date_data:
-                    return jsonify({'error': 'Cada objeto de fecha debe contener tanto "date" como "times"'}), 400
+                nueva_disponibilidad = AvailabilityDates(
+                    date=item['date'],
+                    time=item['time'],
+                    id=item['id'],
+                )
 
-                # Extrae la fecha de la entrada de datos
-                date = date_data['date']
+                db.session.add(nueva_disponibilidad)
 
-                # Verifica si el campo 'times' es una lista
-                if not isinstance(date_data['times'], list):
-                    return jsonify({'error': 'El campo "times" debe ser una lista de horas para la fecha especificada'}), 400
-
-                # Itera sobre cada hora en la lista de horas
-                for time in date_data['times']:
-                    # Crea una nueva instancia de AvailabilityDates y la agrega a la sesión
-                    nueva_disponibilidad = AvailabilityDates(
-                        date=date,
-                        time=time
-                    )
-                    db.session.add(nueva_disponibilidad)
-
-            # Guarda los cambios en la base de datos
-            db.session.commit()
-
-            return jsonify({'mensaje': 'Horas bloqueadas exitosamente'}), 200
-
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
-      
-#Desbloquear hora
-@api.route('/bloquear', methods=['PUT'])
-def desbloquear():
-    if request.method == 'PUT':
-        try:
-            data = request.get_json()
-
-            required_fields = ['id', 'date']
+        elif isinstance(data, dict):
+            # Si es un objeto individual
+            required_fields = ['date', 'time', 'id']
             for field in required_fields:
                 if field not in data:
                     return jsonify({'error': f'{field} es un campo obligatorio'}), 400
 
-            # Suponiendo que tienes un identificador único para las fechas y horas bloqueadas
-            date_to_unlock = data.get('date')  # Asegúrate de tener el campo date en el payload
+            nueva_disponibilidad = AvailabilityDates(
+                date=data['date'],
+                time=data['time'],
+                id=data['id'],
+            )
 
-            # Buscar la entrada en la base de datos
-            disponibilidad_a_desbloquear = AvailabilityDates.query.filter_by(date=date_to_unlock).first()
+            db.session.add(nueva_disponibilidad)
 
-            if disponibilidad_a_desbloquear:
-                # Actualizar la disponibilidad a True
-                db.session.commit()
+        else:
+            return jsonify({'error': 'El formato de datos no es válido'}), 400
 
-                return jsonify({'mensaje': 'Hora desbloqueada exitosamente'}), 200
-            else:
-                return jsonify({'error': 'Fecha no encontrada'}), 404
+        db.session.commit()
 
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
+        return jsonify({'mensaje': 'Horas bloqueadas exitosamente'}), 200
 
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500        
+
+# Desbloquear multiples horas
+@api.route('/desbloquear/multiple', methods=['DELETE'])
+def delete_multiple_blocked_times():
+    try:
+        data = request.get_json()
+        ids = [item['id'] for item in data]  # Obtener una lista de IDs del cuerpo de la solicitud
+
+        if not isinstance(ids, list):
+            return jsonify({"error": "La lista de IDs debe ser un arreglo"}), 400
+
+        deleted_count = 0
+        for id in ids:
+            blocked_time = AvailabilityDates.query.get(id)
+            if blocked_time:
+                db.session.delete(blocked_time)
+                deleted_count += 1
+
+        db.session.commit()
+
+        return jsonify({"message": f"{deleted_count} horas desbloqueadas exitosamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Desbloquear Hora en particular
 @api.route('/bloquear/<string:id>', methods=['DELETE'])
 def delete_blocked_time(id):
     try:
@@ -489,7 +492,7 @@ def delete_blocked_time(id):
         return jsonify({"message": str(e)}), 500
 
 # Obtener fechas dispponibles
-@api.route('/bloquear', methods=['GET'])
+@api.route('/fetch_bloquear', methods=['GET'])
 def unaviable_dates():
     if request.method == 'GET':
         try:
@@ -510,3 +513,4 @@ def unaviable_dates():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
