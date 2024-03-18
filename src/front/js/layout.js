@@ -46,7 +46,7 @@ const Layout = () => {
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <Payments />} path="/payments" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <PatientSchedule />} path="/patient_schedule" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <Scheduling />} path="/scheduling" />
-                        <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <AppointmentScheduler />} path="/appointment_scheduler" />
+                        <Route element={<AppointmentScheduler />} path="/appointment_scheduler" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <IncomeControl />} path="/income_control" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <Inbox />} path="/inbox" />
                         <Route element={<Reset_password />} path="/reset_password" />

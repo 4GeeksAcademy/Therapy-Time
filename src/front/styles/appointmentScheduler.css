@@ -1,5 +1,10 @@
 /* home.css */
-
+div{
+  border: 1px solid;
+}
+body{
+  background-color: rgba(230,218,218);
+}
 .selected {
   background-color: gray !important;
 }
