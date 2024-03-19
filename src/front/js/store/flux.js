@@ -18,6 +18,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"reset_token": ""
 				},
 			],
+			unavailableDates: [],
 			consultations: [
 				{
 					"id": "",
@@ -31,7 +32,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"arrival_date ": "",
 					"arrival_date": "",
 				}
-			]
+			],
+			dates: [{
+				"date": "",
+				"times": []
+			}],
+			globalEnabled: [{
+				"id": "",
+				"day": "",
+				"start_hour": "",
+				"end_hour": ""
+			}],
+			globalEnabledByDay:[{
+				"id": "",
+				"day": "",
+				"start_hour": "",
+				"end_hour": ""
+			}]
 		},
 		actions: {
 			//Funciones globales
@@ -58,7 +75,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return { error: resp.statusText };
 					}
 
-					return resp
+					return resp.json()
 				} catch (error) {
 					console.error("Error:", error)
 				}
@@ -448,9 +465,106 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.error("Error: ", error)
 				}
-			}
+			},
+			//Funciones para el bloqueo de fechas individuales
+			blockMultipleHours: async (dates) => {
+				try {
+					const data = {
+						dates: dates
+					};
+
+					const response = await getActions().apiFetch('/block_multiple_hours', 'POST', data);
+
+					if (response && response.message) {
+						console.log('Horas bloqueadas con éxito:', response.message);
+					} else {
+						console.error('Error al bloquear horas:', response.error);
+					}
+				} catch (error) {
+					console.error('Error al bloquear horas:', error);
+				}
+			},
+			getBlockedDates: async () => {
+				try {
+					const response = await getActions().apiFetch('/bloquear', 'GET');
+					if (response && response.length > 0) {
+						console.log('Fechas bloqueadas obtenidas con éxito:', response);
+						return response;
+					} else {
+						console.log('No hay fechas bloqueadas disponibles.');
+						return [];
+					}
+				} catch (error) {
+					console.error('Error al obtener fechas bloqueadas:', error);
+					throw error;
+				}
+			},
+			//Funciones para el bloqueo de fechas globales
+			addGlobalEnabled: async (data) => {
+				try {
+					const response = await getActions().apiFetch('/global_enabled', 'POST', data);
+			
+					if (!response.ok) {
+						throw new Error('Error al agregar disponibilidad global');
+					}
+					const responseData = await response.json();
+					const updatedGlobalEnabled = [...getStore().globalEnabled, ...responseData]; 
+					setStore({ globalEnabled: updatedGlobalEnabled });
+					return responseData;
+				} catch (error) {
+					console.error("Error al agregar disponibilidad global:", error);
+					const errorMessage = error.message || 'Error de red';
+					return { success: false, error: errorMessage };
+				}
+			},
+			getGlobalEnabled: async () => {
+				try {
+					const resp = await getActions().apiFetch('/get_global_enabled', 'GET');
+					if (resp.ok) {
+						const data = await resp.json();
+						setStore({ globalEnabled: data }); 
+						return data;
+					} else {
+						throw new Error("Error al obtener los datos de disponibilidad global.");
+					}
+				} catch (error) {
+					console.error("Error al obtener los datos de disponibilidad global:", error.message);
+					throw error;
+				}
+			},
+			getGlobalEnabledByDay: async (day) => {
+				try {
+				  const resp = await getActions().apiFetch(`/get_global_enabled_by_day/${day}`, 'GET');
+				  if (resp.ok) {
+					const data = await resp.json();
+					setStore({ globalEnabledByDay: data }); 
+					return data; 
+				  } else {
+					throw new Error("Error al obtener los datos de disponibilidad global por día.");
+				  }
+				} catch (error) {
+				  console.error("Error al obtener los datos de disponibilidad global por día:", error.message);
+				  throw error;
+				}
+			},
+			deleteGlobalEnabled: async (id) => {
+				try {
+					const resp = await getActions().apiFetch(`/delete_global_enabled/${id}`, 'DELETE');
+					if (resp.ok) {
+						const data = await resp.json();
+						const updatedGlobalEnabled = getStore().globalEnabled.filter(item => item.id !== id);
+						setStore({ globalEnabled: updatedGlobalEnabled });
+						return data;
+					} else {
+						throw new Error("Error al eliminar el registro de disponibilidad global.");
+					}
+				} catch (error) {
+					console.error("Error al eliminar el registro de disponibilidad global:", error.message);
+					throw error;
+				}
+			}		
 		}
-	};
+	}	
 };
 
 export default getState;
