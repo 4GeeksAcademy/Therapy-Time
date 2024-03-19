@@ -145,13 +145,6 @@ export const EditProfile = () => {
 
             fetchData();
 
-            setUsername('');
-            setPassword('');
-            setConfirmPassword('');
-            setName('');
-            setLastname('');
-            setDni('');
-            setEmail('');
             setPasswordError('');
             setConfirmError('');
             setEmailError('');
@@ -184,7 +177,7 @@ export const EditProfile = () => {
                                             maxLength={50}
                                             onChange={handleInputChange}
                                             readOnly={!editable}
-                                            style={{ backgroundColor: editable ? 'white' : '#FAFAFA'}}
+                                            style={{ backgroundColor: editable ? 'white' : '#FAFAFA' }}
                                         />
                                     </div>
                                 </div>
