@@ -65,9 +65,10 @@ def seed():
 class Reservation(db.Model):
     __tablename__='reservation'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date = db.Column(db.Date, nullable=False)
+    date_id = db.Column(db.Integer, db.ForeignKey('availability_dates.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship("User")
+    date = db.relationship("AvailabilityDates")
 
 
     def __repr__(self):
@@ -75,9 +76,8 @@ class Reservation(db.Model):
     def serialize(self):
         return{
             "id": self.id,
-            "date": self.date,
+            "date_id": self.date_id,
             "user_id": self.user_id,
-            "time_id": self.time_id,
         }
 
 class AvailabilityDates(db.Model):

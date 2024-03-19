@@ -514,3 +514,25 @@ def unaviable_dates():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Reservar turno
+@app.route('/create_reservation', methods=['POST'])
+def create_reservation():
+    data = request.json
+
+    # Guardar en AvailabilityDates
+    new_availability = AvailabilityDates(date=data['date'], time=data['time'])
+    db.session.add(new_availability)
+    db.session.commit()
+
+    # Obtener el ID del nuevo registro de AvailabilityDates
+    availability_id = new_availability.id
+
+    # Guardar en Reservation
+    new_reservation = Reservation(date_id=availability_id, user_id=data['user_id'])
+    db.session.add(new_reservation)
+    db.session.commit()
+
+    return jsonify(message="Reserva creada exitosamente")
+
+if __name__ == '__main__':
+    app.run(debug=True)
