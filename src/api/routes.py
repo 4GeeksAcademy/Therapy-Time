@@ -11,6 +11,7 @@ import datetime, json, string, random
 from sqlalchemy.exc import IntegrityError
 import requests
 from datetime import date, time, timedelta
+from datetime import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -645,7 +646,7 @@ def remove_appointment():
     user_id = get_jwt_identity()  
     try:
         now = datetime.now()
-        
+
         # Filtrar las reservas para traer la mas proxima
         reservation = Reservation.query.filter(
             Reservation.user_id == user_id
@@ -682,10 +683,10 @@ def remove_appointment():
 def reschedule_appointment():
     user_id = get_jwt_identity
     data = request.get_json()
-    
+
     try:
-        desired_date = datetime.date.fromisoformat(data.get("date"))
-        desired_time = data.get("time")
+        desired_date = datetime.strptime(data['date'] + ' ' + data['time'], '%Y/%m/%d %H:%M')
+        desired_time = desired_date.time()
 
         if not is_therapist_available(desired_date, desired_time):
             return jsonify({"message": "El horario elegido no esta disponible"}), 409

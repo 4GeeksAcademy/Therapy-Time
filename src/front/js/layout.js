@@ -9,12 +9,12 @@ import { Login } from "./pages/login"
 import { Recovery } from "./pages/recovery";
 import { HomePatient } from "./pages/homePatient";
 import { HomeTherapist } from "./pages/homeTherapist";
-import {Scheduling} from "./pages/scheduling.js";
+import { Scheduling } from "./pages/scheduling.js";
 import { AppointmentScheduler } from "./pages/appointmentScheduler";
 import { IncomeControl } from "./pages/incomeControl";
 import { Inbox } from "./pages/inbox";
 import { Patients } from "./pages/patients";
-import { Payments } from "./pages/payments";
+import { PaymentList } from "./pages/paymentList";
 import { PatientSchedule } from "./pages/patientSchedule";
 import { Reset_password } from "./pages/resetPassword";
 import { EditProfile } from "./pages/editProfile";
@@ -43,7 +43,7 @@ const Layout = () => {
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <HomeTherapist />} path="/home" />
                         <Route element={<Recovery />} path="/recovery" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <EditProfile />} path="/editProfile" />
-                        <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <Payments />} path="/payments" />
+                        <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <PaymentList />} path="/payment_list" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <PatientSchedule />} path="/patient_schedule" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <Scheduling />} path="/scheduling" />
                         <Route element={!isAuthenticated() ? <Navigate to="/login" /> : <AppointmentScheduler />} path="/appointment_scheduler" />

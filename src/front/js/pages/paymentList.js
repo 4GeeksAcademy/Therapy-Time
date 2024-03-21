@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { NavbarPatient } from "../component/navbar_patient";
 
-export const Payments = () => {
+export const PaymentList = () => {
     const { store, actions } = useContext(Context);
 
 
