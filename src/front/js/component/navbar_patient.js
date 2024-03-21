@@ -57,7 +57,7 @@ export const NavbarPatient = () => {
 			</div>
 			<div id="profile-button">
 				<div className="dropdown">
-					<button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style={{ color: '#CA857D', fontSize: '3vh' }}>
+					<button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style={{ color: '#8A97A6', fontSize: '3vh' }}>
 						{userData.name + " " + userData.lastname}
 					</button>
 					<ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">

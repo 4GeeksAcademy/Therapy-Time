@@ -43,7 +43,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				"start_hour": "",
 				"end_hour": ""
 			}],
-			globalEnabledByDay:[{
+			globalEnabledByDay: [{
 				"id": "",
 				"day": "",
 				"start_hour": "",
@@ -75,7 +75,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return { error: resp.statusText };
 					}
 
-					return resp.json()
+					return resp
 				} catch (error) {
 					console.error("Error:", error)
 				}
@@ -423,7 +423,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			fetchNextAppointment: async () => {
 				try {
-					const response = await getActions.protectedFetch("/next_appointment", "GET", null)
+					const response = await getActions().protectedFetch("/next_appointment", "GET", null)
 
 					if (!response.ok) {
 						if (nextTurn === null) {
@@ -441,7 +441,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			deleteNextAppointment: async () => {
 				try {
-					const response = await getActions.protectedFetch("/remove_appointment", "DELETE", null)
+					const response = await getActions().protectedFetch("/remove_appointment", "DELETE", null)
 
 					if (!response.ok) {
 						throw new Error("Error al borrar el turno")
@@ -454,7 +454,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			modifyNextAppointment: async () => {
 				try {
-					const response = await getActions.protectedFetch("/reschedule_appointment", "POST", { date, time })
+					const response = await getActions().protectedFetch("/reschedule_appointment", "POST", { date, time })
 
 					if (!response.ok) {
 						throw new Error("Error al modificar el turno")
@@ -503,12 +503,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 			addGlobalEnabled: async (data) => {
 				try {
 					const response = await getActions().apiFetch('/global_enabled', 'POST', data);
-			
+
 					if (!response.ok) {
 						throw new Error('Error al agregar disponibilidad global');
 					}
 					const responseData = await response.json();
-					const updatedGlobalEnabled = [...getStore().globalEnabled, ...responseData]; 
+					const updatedGlobalEnabled = [...getStore().globalEnabled, ...responseData];
 					setStore({ globalEnabled: updatedGlobalEnabled });
 					return responseData;
 				} catch (error) {
@@ -522,7 +522,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const resp = await getActions().apiFetch('/get_global_enabled', 'GET');
 					if (resp.ok) {
 						const data = await resp.json();
-						setStore({ globalEnabled: data }); 
+						setStore({ globalEnabled: data });
 						return data;
 					} else {
 						throw new Error("Error al obtener los datos de disponibilidad global.");
@@ -534,17 +534,17 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			getGlobalEnabledByDay: async (day) => {
 				try {
-				  const resp = await getActions().apiFetch(`/get_global_enabled_by_day/${day}`, 'GET');
-				  if (resp.ok) {
-					const data = await resp.json();
-					setStore({ globalEnabledByDay: data }); 
-					return data; 
-				  } else {
-					throw new Error("Error al obtener los datos de disponibilidad global por día.");
-				  }
+					const resp = await getActions().apiFetch(`/get_global_enabled_by_day/${day}`, 'GET');
+					if (resp.ok) {
+						const data = await resp.json();
+						setStore({ globalEnabledByDay: data });
+						return data;
+					} else {
+						throw new Error("Error al obtener los datos de disponibilidad global por día.");
+					}
 				} catch (error) {
-				  console.error("Error al obtener los datos de disponibilidad global por día:", error.message);
-				  throw error;
+					console.error("Error al obtener los datos de disponibilidad global por día:", error.message);
+					throw error;
 				}
 			},
 			deleteGlobalEnabled: async (id) => {
@@ -562,9 +562,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error al eliminar el registro de disponibilidad global:", error.message);
 					throw error;
 				}
-			}		
+			}
 		}
-	}	
+	}
 };
 
 export default getState;

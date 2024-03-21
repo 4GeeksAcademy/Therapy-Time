@@ -80,6 +80,7 @@
 		"font-awesome": "^4.7.0",
 		"prop-types": "^15.6.1",
 		"react": "^16.8.4",
+		"react-bootstrap": "^2.10.2",
 		"react-calendar": "^4.8.0",
 		"react-dom": "^16.8.4",
 		"react-polyfills": "0.0.1",

@@ -199,7 +199,7 @@ export const Landing = () => {
             </div>
             <div className={`modal fade  ${showModal ? 'show d-block' : 'd-none'}`} id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content" style={{textAlign:'left'}} id='contactModal'>
+                    <div className="modal-content" style={{ textAlign: 'left' }} id='contactModal'>
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">Formulario de contacto</h1>
                             <button type="button" className="btn_close_contact" onClick={closeModal}>X</button>
@@ -253,7 +253,7 @@ export const Landing = () => {
             </div>
             <div className={`modal fade ${showSuccessModal ? 'show d-block' : 'd-none'}`} id="successModal" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content" style={{textAlign:'left'}} id='contactModal'>
+                    <div className="modal-content" style={{ textAlign: 'left' }} id='contactModal'>
                         <div className="modal-header justify-content-end">
                             <button type="button" className="btn_close_contact" onClick={closeSuccessModal} aria-label="Close">X</button>
                         </div>
@@ -270,7 +270,7 @@ export const Landing = () => {
             </div>
             <div className={`modal fade ${showAboutModal ? 'show d-block' : 'd-none'}`} id="successModal" tabIndex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content" style={{textAlign:'left'}} id='contactModal'>
+                    <div className="modal-content" style={{ textAlign: 'left' }} id='contactModal'>
                         <div className="modal-header justify-content-end">
                             <button type="button" className="btn_close_contact" onClick={closeShowAboutModal} aria-label="Close" style={{ float: 'right' }}>X</button>
                         </div>

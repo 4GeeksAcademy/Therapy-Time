@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { NavbarPatient } from "../component/navbar_patient";
 import { CancelModal } from "../component/cancelModal";
@@ -16,32 +16,37 @@ export const PatientSchedule = () => {
 
     const currentDate = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear()
 
-    const navigate = useNavigate()
-
     useEffect(() => {
         const fetchNextAppointment = async () => {
             try {
                 const response = await actions.protectedFetch("/next_appointment", "GET", null);
                 if (!response.ok) {
-                    throw new Error("Error fetching next appointment"); // More specific error
+                    throw new Error("Error fetching next appointment");
                 }
 
                 const appointment = await response.json();
 
                 setNextTurn(appointment);
-                setAppointmentError(null); // Clear any previous error on successful fetch
+                setAppointmentError(null);
             } catch (error) {
                 console.error("Error fetching next appointment:", error);
                 if (error.message.includes("409 Conflict")) {
                     setAppointmentError("Solo se puede cancelar con 24hs de anticipación");
-                } else {
-                    setAppointmentError("Error al traer proximo turno"); // Set the error message
                 }
             }
         };
 
         fetchNextAppointment();
     }, []);
+
+    // Para mostrar la fecha en español
+    // Sin esta función la fecha se mostraria en ingles y con la hora en GMT al final
+    const formatedDate = (dateString) => {
+        const date = new Date(dateString)
+        const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+        const locale = "es-ES" // Idioma para los días
+        return date.toLocaleDateString(locale, options)
+    }
 
     return (
         <div>
@@ -52,8 +57,8 @@ export const PatientSchedule = () => {
                 </div>
                 <div className="col-6" style={{ backgroundColor: '#Fafafa' }}>
                     <div className="row">
-                        <h3>Tu proximo turno: {nextTurn ? nextTurn.date : "No hay turnos próximos"}</h3>
-                        <h4>Hora: </h4>
+                        <h3>Tu proximo turno: {nextTurn ? formatedDate(nextTurn.date) : "No hay turnos próximos"}</h3>
+                        <h4>Hora: {nextTurn ? nextTurn.time : ""}</h4>
                         <p>Acceso a la sala virtual: </p>
                         <a href="#">{/*Agregar link al meet*/}</a>
                         {appointmentError && (

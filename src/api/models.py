@@ -89,9 +89,13 @@ class Reservation(db.Model):
     __tablename__='reservation'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship("User")
 
+    @property
+    def naive_date(self):
+        return self.date.replace(tzinfo=None) # Para evitar un error por ambiguedad de zona horaria
     def __repr__(self):
         return f'<Reservation {self.id}>'
     def serialize(self):
@@ -106,7 +110,7 @@ class AvailabilityDates(db.Model):
     __tablename__='availability_dates'
     id= db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.DateTime, nullable=False)
-    time = db.Column(db.Integer, nullable=False)
+    time = db.Column(db.Time, nullable=False)
 
     def __repr__(self):
         return f'<Availability_dates {self.id}>'
@@ -133,7 +137,7 @@ class Schedules(db.Model):
 class BlockedTokenList(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     jti = db.Column(db.String(100), unique = True)
-    date_time = db.Column(db.DateTime, nullable = True)
+    date_time = db.Column(db.DateTime(timezone=False), nullable = True)
     expires = db.Column(db.DateTime, nullable = True)
 
 class Consultation(db.Model):

@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 
 export const CancelModal = () => {
     const { actions } = useContext(Context)
+    const [nextTurn, setNextTurn] = useState(null)
 
     const date = new Date()
     const currentDate = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear()
@@ -33,7 +34,7 @@ export const CancelModal = () => {
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">No, volver</button>
-                        <button type="button" className="btn btn-primary" onClick={deleteAppointment}>Si, cancelar</button>
+                        <button type="button" className="btn btn-primary" onClick={deleteAppointment} data-bs-dismiss="modal">Si, cancelar</button>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,7 @@ import os
 import datetime, json, string, random 
 from sqlalchemy.exc import IntegrityError
 import requests
-from datetime import datetime, time
+from datetime import date, time, timedelta
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -198,8 +198,10 @@ def login():
 def logout_user():
     payload = get_jwt()
     jti = payload['jti']
-    exp = datetime.datetime.fromtimestamp(payload['exp'])
-    blocked_token = BlockedTokenList(jti = jti, expires = exp)
+    exp = payload['exp']
+
+    expires_datetime = datetime.fromtimestamp(exp)
+    blocked_token = BlockedTokenList(jti = jti, expires = expires_datetime)
 
     db.session.add(blocked_token)
     db.session.commit()
@@ -611,7 +613,7 @@ def unaviable_dates():
     
 # Traer el proximo turno (paciente)
 @api.route('/next_appointment', methods=['GET'])
-@jwt_required
+@jwt_required()
 def get_appointment():
     user_id = get_jwt_identity()
 
@@ -620,12 +622,14 @@ def get_appointment():
         # (¿Asumimos que la terapeuta agrego la más proxima primero?)
         reservation = Reservation.query \
             .filter(Reservation.user_id == user_id) \
-            .filter(Reservation.date >= datetime.date.today()) \
+            .filter(Reservation.date >= datetime.today().date()) \
             .order_by(Reservation.date.asc(), Reservation.time.asc()) \
             .first()
 
         if reservation:
-            return jsonify(reservation.serialize())
+            reservation_dict = reservation.serialize()  
+            reservation_dict['time'] = reservation.time.strftime('%H:%M')  
+            return jsonify(reservation_dict)
         else:
             return jsonify({"message": "No hay turnos próximos"}), 200 
 
@@ -635,40 +639,45 @@ def get_appointment():
         return jsonify({"error": "Error del servidor"}), 500
 
 # Cancelar el proximo turno (paciente)
-@app.route('/remove_appointment', methods=['DELETE'])
+@api.route('/remove_appointment', methods=['DELETE'])
 @jwt_required()  
 def remove_appointment():
     user_id = get_jwt_identity()  
-
     try:
-        now = datetime.now(datetime.UTC)
-
+        now = datetime.now()
+        
         # Filtrar las reservas para traer la mas proxima
         reservation = Reservation.query.filter(
             Reservation.user_id == user_id
         ).order_by(Reservation.date).first()
+
+        datestring = reservation.date.isoformat()
+        hourstring = reservation.time.isoformat()
+
+        formatted_date = datetime.fromisoformat(datestring + 'T' + hourstring)
 
         if not reservation:
             return jsonify({"message": "No hay turnos próximos para eliminar"}), 404
 
         # Comprobar si el turno es antes de las 24 hs
         removal_threshold = now + timedelta(hours=24)
-        if reservation.date < removal_threshold:
+
+        if formatted_date < removal_threshold:
             return jsonify({"message": "El turno ya no se puede cancelar. Debe hacerlo con al menos 24hs de anticipación."}), 409  
 
         Reservation.query.filter_by(id=reservation.id).delete()
-        app.db.session.commit()
-
+        db.session.commit()
+        
         return jsonify({"message": "Turno eliminado exitosamente"}), 200
 
     except Exception as e:
         # Cancelar cambios en la bbdd en caso de error
-        app.db.session.rollback()  
+        db.session.rollback()  
         print(f"Error al eliminar turno de usuario {user_id}: {e}")
         return jsonify({"error": "Error del servidor"}), 500
 
 # Modificar turno (paciente)
-@app.route('/reschedule_appointment', methods=['POST'])
+@api.route('/reschedule_appointment', methods=['POST'])
 @jwt_required()
 def reschedule_appointment():
     user_id = get_jwt_identity
@@ -699,20 +708,23 @@ def reschedule_appointment():
         return jsonify({"error": "Error del servidor"}), 500
 
 # Reservar turno
-@app.route('/create_reservation', methods=['POST'])
+@api.route('/create_reservation', methods=['POST'])
 def create_reservation():
     data = request.json
 
+    date_time_obj = datetime.strptime(data['date'] + ' ' + data['time'], '%Y/%m/%d %H:%M')
+    time_obj = date_time_obj.time()
+
     # Guardar en AvailabilityDates
-    new_availability = AvailabilityDates(date=data['date'], time=data['time'])
+    new_availability = AvailabilityDates(date=date_time_obj, time=time_obj)
     db.session.add(new_availability)
     db.session.commit()
 
     # Obtener el ID del nuevo registro de AvailabilityDates
     availability_id = new_availability.id
 
-    # Guardar en Reservation
-    new_reservation = Reservation(date_id=availability_id, user_id=data['user_id'])
+    # Guardar en Reservation with complete data
+    new_reservation = Reservation(id=availability_id, user_id=data['user_id'], date=date_time_obj.date(), time=date_time_obj)
     db.session.add(new_reservation)
     db.session.commit()
 
