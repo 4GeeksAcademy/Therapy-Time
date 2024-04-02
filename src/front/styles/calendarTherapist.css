@@ -1,0 +1,168 @@
+/* home.css */
+
+.selected {
+  transition: color 0.05s, background-color 0.2s, border-radius 0.2s;
+  box-shadow: 2px 2px #8e5958 ;
+  border-color: #C47C7A !important;
+  background-color: #C47C7A !important;
+  color: white;
+}
+.btn_horasPorFecha{
+  background-color: #f5f1f1;
+  border-radius: 5px;
+  color:grey;
+}
+
+.btn_horasPorFecha:hover{
+  background-color: grey;
+  color: white;
+  border: none
+}
+.unavailableDateTherapist{
+  border-color: rgb(196, 124, 122); 
+  color: white;
+  background-color: #A9A9A9;
+}
+
+.unavailableByDateTherapist{
+  border-color: #A9A9A9 !important;
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.75) !important;
+  color: rgba(0, 0, 0, 0.75);
+  background-color: #A9A9A9;
+  cursor: not-allowed !important;
+}
+.calendar {
+  width: 80%;
+  max-width: 400px;
+  margin: 20px auto;
+  border-collapse: collapse;
+  border-spacing: 5px;
+}
+.calendar th, .calendar td {
+  padding: 10px;
+  text-align: center;
+  border: none;
+}
+.calendar th {
+  background-color: #f2f2f2;
+}
+.calendar td {
+  cursor: pointer;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.modal-content li {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.modal-content li button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.blockDate{
+  cursor: pointer;
+  background-color: rgb(225, 174, 174) ;
+}
+.blockDate:hover{
+  cursor: pointer;
+  color: whitesmoke;
+  background-color: rgb(214, 115, 115) ;
+  transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
+}
+.unblockDate{
+  cursor: pointer;
+  background-color: rgb(204, 228, 199) ;
+}
+.unblockDate:hover{
+  cursor: pointer;
+  color: black;
+  background-color: rgb(150, 233, 133) ;
+  transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
+}
+button {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    margin: 0;
+    font-size: 16px;
+    transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
+}
+.button-container {
+text-align: center;
+margin-top: 10px;
+}
+button:hover {
+color: #C47C7A; 
+background-color: #f2f2f2;
+}
+.calendar td {
+cursor: pointer;
+transition: background-color 0.3s, border-radius 0.3s;
+}
+.calendar td:hover {
+background-color: #C47C7A; 
+color: #fff; 
+}
+
+.matching-hour{
+  background-color: red;
+}
+td {
+  position: relative;
+}
+/* Estilo de la pestañita */
+.pestanita {
+  position: relative;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.botones {
+  justify-content: space-evenly;
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+.botones > button{
+  font-size: small;
+}
+.pestanita:hover .botones {
+  display: flex;
+  flex-direction: row;
+}

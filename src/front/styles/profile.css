@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jura&display=swap');
+.titleProfile{
+    color:gray;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.textProfile{
+    font-family: 'Jura', sans-serif;
+    font-size: larger;
+    font-style: oblique;
+}
+.btn_editar{
+    background-color:  #bebbb9 ;
+    border:none;
+    color:white;
+    padding: 1vh;
+    margin-top: 2vh;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.btn_editar:hover{
+    background-color:#C47C7A;
+    color: white;
+}
+.profileData{
+    line-height: 0.5;
+}
+.titleEdit{
+    font-family: 'Nanum Gothic', sans-serif;
+    color:  gray;
+    font-size: large;
+}

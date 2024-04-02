@@ -1,23 +1,39 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
-
-import { Home } from "./pages/home";
-import { Demo } from "./pages/demo";
-import { Single } from "./pages/single";
+import { Context } from "./store/appContext";
 import injectContext from "./store/appContext";
+import { AppointmentScheduler } from "./pages/appointmentScheduler";
+import { EditDate } from "./pages/editDate.js";
+import { EditProfile } from "./pages/editProfile";
+import { HomePatient } from "./pages/homePatient";
+import { HomeTherapist } from "./pages/homeTherapist";
+import { IncomeControl } from "./pages/incomeControl";
+import { Inbox } from "./pages/inbox";
+import { isAuthenticated } from "./authentication";
+import { Landing } from "./pages/landing";
+import { Login } from "./pages/login";
+import { NewDate } from "./pages/newDate.js";
+import { Patients } from "./pages/patients";
+import { Payment } from "./pages/payment";
+import { PaymentList } from "./pages/paymentList";
+import { Recovery } from "./pages/recovery";
+import { Reset_password } from "./pages/resetPassword";
+import { Scheduling } from "./pages/scheduling.js";
+import { Navbar } from "./component/generalNavbar.js"
 
-import { Navbar } from "./component/navbar";
-import { Footer } from "./component/footer";
 
-//create your first component
 const Layout = () => {
-    //the basename is used when your project is published in a subdirectory and not in the root of the domain
-    // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
     const basename = process.env.BASENAME || "";
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
-    if(!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL/ >;
+    const { store } = useContext(Context);
+    const userRole = JSON.parse(localStorage.getItem('data'))
+
+    useEffect ( () =>{
+       console.log(userRole)
+    }, [])
 
     return (
         <div>
@@ -25,12 +41,24 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route element={<Landing />} path="/" />
+                        <Route element={<Login />} path="/login" />
+                        <Route element={<Recovery />} path="/recovery" />
+                        <Route element={<Reset_password />} path="/reset_password" />
+                        {!isAuthenticated() ? <Route element={<Navigate to="/login" />} path="*" /> : <>
+                            <Route element={userRole.role === 1 ? <HomePatient /> : <HomeTherapist />} path="/home" />
+                            <Route element={<EditProfile />} path="/editProfile" />
+                            <Route element={<Payment />} path="/payment" />
+                            <Route element={<PaymentList />} path="/payment_list" />
+                            <Route element={<Scheduling />} path="/scheduling" />
+                            <Route element={<AppointmentScheduler />} path="/appointment_scheduling" />
+                            <Route element={<IncomeControl />} path="/income_control" />
+                            <Route element={<Inbox />} path="/inbox" />
+                            <Route element={<Patients />} path="/patients" />
+                            <Route element={<NewDate />} path="/new_date" />
+                            <Route element={<EditDate />} path="/edit_date" />
+                        </>}
                     </Routes>
-                    <Footer />
                 </ScrollToTop>
             </BrowserRouter>
         </div>

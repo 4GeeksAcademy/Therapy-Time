@@ -1,0 +1,32 @@
+[
+    {"target_class": "Role",
+        "data":[
+            {
+                "id": 1,
+                "name": "Patient"
+            },
+            {
+                "id": 2,
+                "name": "Therapist"
+            }
+
+        ]
+    },
+    {   "target_class": "User",
+    "data":[
+        {
+            "role_id": 2, 
+            "username": "SVIGANO",
+            "name": "Sofia",
+            "lastname": "Vigano",
+            "dni": "35578170",  
+            "email": "lic.viganosofia@gmail.com",
+            "phone": "3513052538",
+            "password": "$2b$10$vOJtbTagoRdIfn4ssUXyhOkTXOgs5TmKuCPuJ7IIDrE0RnzAC7XGW",
+            "virtual_link": "",
+            "is_active": true
+        }
+    ]
+    }
+]
+   

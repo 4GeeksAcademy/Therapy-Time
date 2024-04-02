@@ -1,7 +1,63 @@
-/*
-    home.css: This website contains selectors only used in home.css
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+.grid-container {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-wrap: wrap;
+    gap: 10px; 
+    padding-left:50vh;
+    padding-right: 50vh;
+    padding-top: 6vh;
+    padding-bottom: 10vh;
+}
+.grid-item {
+    width: calc(50% - 15px); 
+    height: 35vh; 
+    background-color: white; 
+    padding: 20px;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: flex-start; 
+    border-top-right-radius: 5vh;
+    border-left: solid #e0d5d5  2vh;
+}
+.grid-item:hover{
+    border-left: solid  #c4baba 2vh;
+    background-color: #fafafa;
+}
+
+.grid-item a {
+    font-size: 2.1rem; 
+    max-width: 20vh;
+    text-decoration: none; 
+    color:  #b4a5a5; 
+    font-family: 'Nanum Gothic', sans-serif;
+    text-align: left;
+    margin-left: 3vh;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.grid-item a:hover {
+    color:#b4a5a5 !important; 
+}
+.logo-container {
+    width: calc(33.33% - 10px); 
+    height: 25vh; 
+    background-color: #EDE9E9;
+    display: flex;
+    justify-content: center; 
+    align-items: flex-end; 
+    background-image: url('https://github.com/4GeeksAcademy/finalProject-LATAM-pt25/blob/prototype/src/front/img/logoHome.png?raw=true');
+    background-size: contain;
+    background-position: center bottom; 
+    background-repeat: no-repeat; 
+}
+
+
+
+
