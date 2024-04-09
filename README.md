@@ -2,7 +2,7 @@ Therapy Time: Your One-Stop Therapy Management App
 
 Therapy Time is a web application designed to streamline scheduling, communication, and patient management for therapists and their clients. Built with cutting-edge technologies, Therapy Time offers a secure and convenient platform for both therapists and patients.
 
-[!Video of Therapy Time](https://youtu.be/G2Ty1Y9_wTg)
+[Video showcasing features](https://youtu.be/G2Ty1Y9_wTg)
 
 For Therapists:
 
