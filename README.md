@@ -1,81 +1,38 @@
-# WebApp boilerplate with React JS and Flask API
+Therapy Time: Your One-Stop Therapy Management App
 
-Build web applications using React.js for the front end and python/flask for your backend API.
+Therapy Time is a web application designed to streamline scheduling, communication, and patient management for therapists and their clients. Built with cutting-edge technologies, Therapy Time offers a secure and convenient platform for both therapists and patients.
 
-- Documentation can be found here: https://start.4geeksacademy.com/starters/react-flask
-- Here is a video on [how to use this template](https://www.loom.com/share/f37c6838b3f1496c95111e515e83dd9b)
-- Integrated with Pipenv for package managing.
-- Fast deployment to heroku [in just a few steps here](https://start.4geeksacademy.com/backend/deploy-heroku-posgres).
-- Use of .env file.
-- SQLAlchemy integration for database abstraction.
+[!Video of Therapy Time](https://youtu.be/G2Ty1Y9_wTg)
 
-### 1) Installation:
+For Therapists:
 
-> If you use Github Codespaces (recommended) or Gitpod this template will already come with Python, Node and the Posgres Database installed. If you are working locally make sure to install Python 3.10, Node 
+    Effortless Scheduling: Manage your calendar with ease. Set availability, block out time, and view upcoming appointments in a clear, organized interface built with React.
+    Patient Management: Store patient information securely, including contact details, appointment history, and notes.
+    Seamless Communication: Communicate directly with patients through secure in-app messaging.
+    Appointment Requests: Allow patients to easily request new appointments through the app, giving you more control over your schedule.
+    Secure Payments: Accept payments conveniently through our integration with the Mercadopago API.
 
-It is recomended to install the backend first, make sure you have Python 3.8, Pipenv and a database engine (Posgress recomended)
+For Patients:
 
-1. Install the python packages: `$ pipenv install`
-2. Create a .env file based on the .env.example: `$ cp .env.example .env`
-3. Install your database engine and create your database, depending on your database you have to create a DATABASE_URL variable with one of the possible values, make sure you replace the valudes with your database information:
+    Appointment Access: View your upcoming appointments and easily manage your therapy schedule.
+    Secure Messaging: Reach out to your therapist directly through the app for secure communication between sessions.
+    Request New Sessions: Submit requests for new appointments conveniently within the app.
 
-| Engine    | DATABASE_URL                                        |
-| --------- | --------------------------------------------------- |
-| SQLite    | sqlite:////test.db                                  |
-| MySQL     | mysql://username:password@localhost:port/example    |
-| Postgress | postgres://username:password@localhost:5432/example |
+Benefits for Both:
 
-4. Migrate the migrations: `$ pipenv run migrate` (skip if you have not made changes to the models on the `./src/api/models.py`)
-5. Run the migrations: `$ pipenv run upgrade`
-6. Run the application: `$ pipenv run start`
+    Improved Efficiency: Therapists spend less time managing schedules and more time focusing on patients. Patients can manage their appointments and communication efficiently.
+    Enhanced Communication: Secure in-app messaging fosters better communication between therapists and patients.
+    Increased Convenience: Both therapists and patients benefit from a streamlined and user-friendly platform.
+    Secure Payments: The Mercadopago API integration ensures secure and convenient payment processing.
 
-> Note: Codespaces users can connect to psql by typing: `psql -h localhost -U gitpod example`
+Technical Specifications:
 
-### Undo a migration
+    Therapy Time is a web application built with a powerful combination of technologies:
+        Frontend: Javascript/React for a dynamic and user-friendly interface.
+        Backend: Python/Flask for robust server-side functionality.
+        UI Framework: Bootstrap for a clean design.
+        Payments: Mercadopago API integration for secure and efficient payment processing.
 
-You are also able to undo a migration by running
+Development:
 
-```sh
-$ pipenv run downgrade
-```
-
-### Backend Populate Table Users
-
-To insert test users in the database execute the following command:
-
-```sh
-$ flask insert-test-users 5
-```
-
-And you will see the following message:
-
-```
-  Creating test users
-  test_user1@test.com created.
-  test_user2@test.com created.
-  test_user3@test.com created.
-  test_user4@test.com created.
-  test_user5@test.com created.
-  Users created successfully!
-```
-
-### **Important note for the database and the data inside it**
-
-Every Github codespace environment will have **its own database**, so if you're working with more people eveyone will have a different database and different records inside it. This data **will be lost**, so don't spend too much time manually creating records for testing, instead, you can automate adding records to your database by editing ```commands.py``` file inside ```/src/api``` folder. Edit line 32 function ```insert_test_data``` to insert the data according to your model (use the function ```insert_test_users``` above as an example). Then, all you need to do is run ```pipenv run insert-test-data```.
-
-### Front-End Manual Installation:
-
--   Make sure you are using node version 14+ and that you have already successfully installed and runned the backend.
-
-1. Install the packages: `$ npm install`
-2. Start coding! start the webpack dev server `$ npm run start`
-
-## Publish your website!
-
-This boilerplate it's 100% read to deploy with Render.com and Heroku in a matter of minutes. Please read the [official documentation about it](https://start.4geeksacademy.com/deploy).
-
-### Contributors
-
-This template was built as part of the 4Geeks Academy [Coding Bootcamp](https://4geeksacademy.com/us/coding-bootcamp) by [Alejandro Sanchez](https://twitter.com/alesanchezr) and many other contributors. Find out more about our [Full Stack Developer Course](https://4geeksacademy.com/us/coding-bootcamps/part-time-full-stack-developer), and [Data Science Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning).
-
-You can find other templates and resources like this at the [school github page](https://github.com/4geeksacademy/).
+Therapy Time is under active development.  We are constantly working to improve the platform and add new features.
